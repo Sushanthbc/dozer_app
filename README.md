@@ -6,3 +6,7 @@ A new Flutter application.
 
 For help getting started with Flutter, view our online
 [documentation](https://flutter.io/).
+
+## Setup project
+git clone https://github.com/Sushanthbc/dozer_app.git dozer_app
+
