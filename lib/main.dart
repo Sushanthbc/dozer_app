@@ -7,9 +7,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'PatientCare',
-      home: new Scaffold(
-        appBar: new Text('PatientCare'),
+      title: 'NGO',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('GO NGO'),
+        ),
+        body: Center(
+          child: Text('This is dollar good'),
+        ),
       ),
-    )
+    );
+  }
 }
