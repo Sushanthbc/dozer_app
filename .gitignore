@@ -10,3 +10,5 @@ pubspec.lock
 .flutter-plugins
 
 android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+ios/Runner.xcodeproj/*
