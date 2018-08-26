@@ -7,21 +7,21 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>153900564018-ot4mv5o9km4su5o30u29070qlst80kn1.apps.googleusercontent.com</string>
+	<string>894943159186-3cturvonl9ohufj06obst19h97ug0sgu.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.153900564018-ot4mv5o9km4su5o30u29070qlst80kn1</string>
+	<string>com.googleusercontent.apps.894943159186-3cturvonl9ohufj06obst19h97ug0sgu</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDU4YhY8TZj-oa1adO8E_uLmwZgXJ30C7Q</string>
+	<string>AIzaSyCdqzav1B5GUcqaGzJZQSlFsWdrunlbljQ</string>
 	<key>GCM_SENDER_ID</key>
-	<string>153900564018</string>
+	<string>894943159186</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.dozer.dozerApp</string>
 	<key>PROJECT_ID</key>
-	<string>dozer-62b18</string>
+	<string>dozerapp-4f47a</string>
 	<key>STORAGE_BUCKET</key>
-	<string>dozer-62b18.appspot.com</string>
+	<string>dozerapp-4f47a.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<true></true>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -33,8 +33,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:153900564018:ios:517875b2cd03ac6e</string>
+	<string>1:894943159186:ios:517875b2cd03ac6e</string>
 	<key>DATABASE_URL</key>
-	<string>https://dozer-62b18.firebaseio.com</string>
+	<string>https://dozerapp-4f47a.firebaseio.com</string>
 </dict>
 </plist>
