@@ -31,7 +31,7 @@ class MyCustomForm extends StatefulWidget {
 class _KcData {
   String callerName = '';
   String address = '';
-  String pincode;
+  String pinCode;
   String town = '';
   String phone = '';
   DateTime rescueDate = new DateTime.now();
@@ -39,22 +39,23 @@ class _KcData {
   String latitude = '';
   String longitude = '';
   String elevation = '';
-  String macroHabitat = null;
-  String microHabitat = null;
-  String condition = null;
+  String elevationUnit = 'feet';
+  String macroHabitat = "Plantation";
+  String microHabitat = "Cow Shed";
+  String condition = "Healthy";
   String length = '';
-  String length_unit = 'feet';
+  String lengthUnit = 'feet';
   String weight = '';
-  String weight_unit = 'kg';
-  String sex = 'Male';
-  String subcaudal = 'Divided';
-  int subcaudal_val = 70;
-  String kc_color = 'Black';
-  String behavior = 'Docile';
+  String weightUnit = "kg";
+  String sex = "male";
+  String subCaudal = 'Divided';
+  int subCaudalVal = 70;
+  String kcColor = 'Black';
+  String behavior = 'docile';
   DateTime releaseDate;
   TimeOfDay releaseTime;
-  String bite_report;
-  String general_remarks;
+  String biteReport;
+  String generalRemarks;
   File image;
   List<File> images = [];
 
@@ -98,17 +99,10 @@ class MyCustomFormState extends State<MyCustomForm> {
   List<String> _macroHabitats = <String>['House', 'Plantation', 'Agricultural Field', 'Forest'];
   List<String> _microHabitats = <String>['Bedroom', 'Kitchen', 'Hall', 'Bathroom', 'Cow Shed'];
   List<String> _conditions = <String>['Healthy','Weak','Shedding'];
-  List<String> _subcaudals = <String>['Divided', 'Undivided'];
-  List<String> _kc_colors = <String>['Black', 'Brown', 'Blackish Brown', 'Brownish Black', 'Olive Brown', 'Olive Green'];
-  List<String> _behaviors = <String>['Docile', 'Defensive'];
+  List<String> _subCaudals = <String>['Divided', 'Undivided'];
+  List<String> _kcColors = <String>['Black', 'Brown', 'Blackish Brown', 'Brownish Black', 'Olive Brown', 'Olive Green'];
   List<String> _lengthUnits = <String>['feet', 'metres'];
   List<String> _weightUnits = <String>['kg','lbs'];
-
-  Color _maleButtonColor = Colors.grey;
-  Color _maleButtonBackground = Colors.black12;
-
-  Color _femaleButtonColor = Colors.grey;
-  Color _femaleButtonBackground = Colors.black12;
 
 
 
@@ -124,18 +118,18 @@ class MyCustomFormState extends State<MyCustomForm> {
           "rescue_date_time": new DateTime(_data.rescueDate.year, _data.rescueDate.month, _data.rescueDate.day, _data.rescueTime.hour, _data.rescueTime.minute).toString(),
           "address": _data.address,
           "village": _data.town,
-          "pincode": int.parse(_data.pincode),
+          "pincode": int.parse(_data.pinCode),
           "country": "IN", //YTI
           "caller_name": _data.callerName,
           "caller_phone": int.parse(_data.phone),
           "snake_length": int.parse(_data.length),
-          "snake_length_unit": _data.length_unit,
+          "snake_length_unit": _data.lengthUnit,
           "snake_weight": int.parse(_data.weight),
-          "snake_weight_unit": _data.weight_unit,
+          "snake_weight_unit": _data.weightUnit,
           "snake_sex": _data.sex,
-          "snake_color": _data.kc_color,
-          "snake_divided_sub_caudals": _data.subcaudal_val,
-          "snake_undivided_sub_caudals": _data.subcaudal_val,
+          "snake_color": _data.kcColor,
+          "snake_divided_sub_caudals": _data.subCaudalVal,
+          "snake_undivided_sub_caudals": _data.subCaudalVal,
           "snake_behavior": _data.behavior,
           "snake_micro_habitat": _data.microHabitat,
           "snake_macro_habitat": _data.macroHabitat,
@@ -182,7 +176,6 @@ class MyCustomFormState extends State<MyCustomForm> {
   }
 
   Future<TimeOfDay> _chooseTime(BuildContext context, TimeOfDay initialTime) async {
-    var timenow = new TimeOfDay.now();
 
     var result = await showTimePicker(
       context: context,
@@ -280,7 +273,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                     ),
                     keyboardType: TextInputType.number,
                     onSaved: (value){
-                      this._data.pincode = value;
+                      this._data.pinCode = value;
                     },
                   ),
                 ),
@@ -299,96 +292,159 @@ class MyCustomFormState extends State<MyCustomForm> {
 
                 new ListTile(
                   leading: const Icon(Icons.location_on),
-                  title: new TextFormField(
-                    decoration: InputDecoration(
-                        labelText: 'Latitude'
-                    ),
-                    onSaved: (value){
-                      this._data.geoLocation['coordinates']['lat'] =  value;
-                    },
-                  ),
+                  title: new Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      new Container(
+                        width: 120.0,
+                        child: new TextFormField(
+                          decoration: InputDecoration(
+                              labelText: 'Latitude'
+                          ),
+                          onSaved: (value){
+                            this._data.geoLocation['coordinates']['lat'] =  value;
+                          },
+                        ),
+                      ),
+                      new Container(
+                        width: 120.0,
+                        child: new TextFormField(
+                          decoration: InputDecoration(
+                              labelText: 'Longitude'
+                          ),
+                          onSaved: (value){
+                            this._data.geoLocation['coordinates']['lng'] =  value;
+                          },
+                        ),
+                      )
+                    ],
+                  )
                 ),
 
                 new ListTile(
-                  leading: const Icon(Icons.location_on),
-                  title: new TextFormField(
-                    decoration: InputDecoration(
-                        labelText: 'Longitude'
-                    ),
-                    onSaved: (value){
-                      this._data.geoLocation['coordinates']['lng'] =  value;
-                    },
-                  ),
+                  leading: const Icon(Icons.landscape),
+                  title: new Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      new Container(
+                        width: 120.0,
+                        child: new TextFormField(
+                          decoration: InputDecoration(
+                              labelText: 'Elevation'
+                          ),
+                          onSaved: (value){
+                            this._data.geoLocation['elevation']['value'] =  value;
+                          },
+                        ),
+                      ),
+                      new Container(
+                        width:120.0,
+                        child: new InputDecorator(
+                          decoration: new InputDecoration(
+                            labelText: "Unit"
+                          ),
+                          child: new DropdownButtonHideUnderline(
+                              child: new DropdownButton<String>(
+                                  value: _data.elevationUnit,
+                                  isDense: true,
+                                  onChanged: (String newValue) {
+                                    setState(() {
+                                      _data.elevationUnit = newValue;
+                                    });
+                                  },
+                                  items: _lengthUnits.map((String value) {
+                                    return new DropdownMenuItem<String>(
+                                      value: value,
+                                      child: new Text(value),
+                                    );
+                                  }
+                                  ).toList()
+                              )
+                          ),
+                        ),
+                      )
+                    ],
+                  )
                 ),
 
                 new ListTile(
-                  leading: const Icon(Icons.airplanemode_active),
-                  title: new TextFormField(
-                    decoration: InputDecoration(
-                        labelText: 'Elevation'
-                    ),
-                    onSaved: (value){
-                      this._data.geoLocation['elevation']['value'] =  value;
-                    },
-                  ),
-                ),
-
-                new ListTile(
-                    leading: const Icon(Icons.note),
-                    title: new DropdownButton<String>(
-                        hint: Text('Macrohabitat'),
-                        value: _data.macroHabitat,
-                        isDense: true,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _data.macroHabitat = newValue;
-                          });
-                        },
-                        items: _macroHabitats.map((String value) {
-                          return new DropdownMenuItem<String>(
-                            value: value,
-                            child: new Text(value),
-                          );
-                        }
-                        ).toList()
+                    leading: const Icon(Icons.public),
+                    title: new InputDecorator(
+                      decoration: new InputDecoration(
+                        labelText: "Macrohabitat"
+                      ),
+                      child: new DropdownButtonHideUnderline(
+                          child: new DropdownButton<String>(
+                              value: _data.macroHabitat,
+                              isDense: true,
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  _data.macroHabitat = newValue;
+                                });
+                              },
+                              items: _macroHabitats.map((String value) {
+                                return new DropdownMenuItem<String>(
+                                  value: value,
+                                  child: new Text(value),
+                                );
+                              }
+                              ).toList()
+                          )
+                      )
                     )
                 ),
 
                 new ListTile(
                     leading: const Icon(Icons.home),
-                    title: new DropdownButton<String>(
-                        hint: Text('Microhabitat'),
-                        value: _data.microHabitat,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _data.microHabitat = newValue;
-                          });
-                        },
-                        items: _microHabitats.map((String value) {
-                          return new DropdownMenuItem<String>(
-                            value: value,
-                            child: new Text(value),
-                          );
-                        }).toList()
+                    title: new InputDecorator(
+                      decoration: new InputDecoration(
+                        labelText: "Microhabitat"
+                      ),
+                      child: new DropdownButtonHideUnderline(
+                          child: new DropdownButton<String>(
+                              value: _data.microHabitat,
+                              isDense: true,
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  _data.microHabitat = newValue;
+                                });
+                              },
+                              items: _microHabitats.map((String value) {
+                                return new DropdownMenuItem<String>(
+                                  value: value,
+                                  child: new Text(value),
+                                );
+                              }).toList()
+                          )
+                      )
                     )
                 ),
 
                 new ListTile(
                     leading: const Icon(Icons.local_hospital),
-                    title: new DropdownButton<String>(
-                        hint: Text('Condition'),
-                        value: _data.condition,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _data.condition = newValue;
-                          });
-                        },
-                        items: _conditions.map((String value) {
-                          return new DropdownMenuItem<String>(
-                            value: value,
-                            child: new Text(value),
-                          );
-                        }).toList()
+                    title: new InputDecorator(
+                      decoration: new InputDecoration(
+                        labelText: "Condition"
+                      ),
+                      child: new DropdownButtonHideUnderline(
+                          child: new DropdownButton<String>(
+                              value: _data.condition,
+                              isDense: true,
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  _data.condition = newValue;
+                                });
+                              },
+                              items: _conditions.map((String value) {
+                                return new DropdownMenuItem<String>(
+                                  value: value,
+                                  child: new Text(value),
+                                );
+                              }).toList()
+                          )
+                      ),
                     )
                 ),
 
@@ -397,10 +453,9 @@ class MyCustomFormState extends State<MyCustomForm> {
                     title: new Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
                         new Container(
-                          width: 50.0,
+                          width: 75.0,
                           child: new TextFormField(
                             decoration: InputDecoration(
                               labelText: 'Length',
@@ -412,17 +467,18 @@ class MyCustomFormState extends State<MyCustomForm> {
                           ),
                         ),
                         new Container(
-                          width: 75.0,
+                          width: 90.0,
                           child: new InputDecorator(
                             decoration: new InputDecoration(
-                                labelText: 'Unit'
+                              labelText: "Unit"
                             ),
                             child: new DropdownButtonHideUnderline(
                                 child: new DropdownButton<String>(
-                                    value: _data.length_unit,
+                                    value: _data.lengthUnit,
+                                    isDense: true,
                                     onChanged: (String newValue) {
                                       setState(() {
-                                        _data.length_unit = newValue;
+                                        _data.lengthUnit = newValue;
                                       });
                                     },
                                     items: _lengthUnits.map((String value) {
@@ -444,10 +500,10 @@ class MyCustomFormState extends State<MyCustomForm> {
                     title: new Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
                         new Container(
-                          width: 50.0,
+                          width: 75.0,
+                          margin: const EdgeInsets.only(right: 40.0),
                           child: new TextFormField(
                             decoration: InputDecoration(
                               labelText: 'Weight',
@@ -459,78 +515,64 @@ class MyCustomFormState extends State<MyCustomForm> {
                           ),
                         ),
                         new Container(
-                          width: 75.0,
+                          width: 90.0,
                           child: new InputDecorator(
                             decoration: new InputDecoration(
-                                labelText: 'Unit'
+                              labelText: "Unit"
                             ),
-                            child: new DropdownButton<String>(
-                                value: _data.weight_unit,
-                                onChanged: (String newValue) {
-                                  setState(() {
-                                    _data.weight_unit = newValue;
-                                  });
-                                },
-                                items: _weightUnits.map((String value) {
-                                  return new DropdownMenuItem<String>(
-                                    value: value,
-                                    child: new Text(value),
-                                  );
-                                }).toList()
+                            child: new DropdownButtonHideUnderline(
+                              child: new DropdownButton<String>(
+                                  value: _data.weightUnit,
+                                  isDense: true,
+                                  onChanged: (String newValue) {
+                                    setState(() {
+                                      _data.weightUnit = newValue;
+                                    });
+                                  },
+                                  items: _weightUnits.map((String value) {
+                                    return new DropdownMenuItem<String>(
+                                      value: value,
+                                      child: new Text(value),
+                                    );
+                                  }).toList()
+                              ),
                             ),
-                          ),
+                          )
                         )
                       ],
                     )
                 ),
 
                 new ListTile(
-                    leading: const Icon(Icons.people),
+                    leading: const Icon(Icons.straighten),
                     title: new InputDecorator(
                       decoration: new InputDecoration(
-                          labelText: 'Sex'
+                        labelText: "Sabcaudal"
                       ),
-                      child: new DropdownButton<String>(
-                          value: _data.sex,
-                          onChanged: (String newValue) {
-                            setState(() {
-                              _data.sex = newValue;
-                            });
-                          },
-                          items: ['Male', 'Female'].map((String value) {
-                            return new DropdownMenuItem<String>(
-                              value: value,
-                              child: new Text(value),
-                            );
-                          }).toList()
+                      child: new DropdownButtonHideUnderline(
+                          child: new DropdownButton<String>(
+                              value: _data.subCaudal,
+                              isDense: true,
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  _data.subCaudal = newValue;
+                                });
+                              },
+                              items: _subCaudals.map((String value) {
+                                return new DropdownMenuItem<String>(
+                                  value: value,
+                                  child: new Text(value),
+                                );
+                              }).toList()
+                          )
                       ),
                     )
                 ),
 
                 new ListTile(
-                    leading: const Icon(Icons.straighten),
-                    title: new DropdownButton<String>(
-                        hint: Text('Subcaudals'),
-                        value: _data.subcaudal,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _data.subcaudal = newValue;
-                          });
-                        },
-                        items: _subcaudals.map((String value) {
-                          return new DropdownMenuItem<String>(
-                            value: value,
-                            child: new Text(value),
-                          );
-                        }).toList()
-                    )
-                ),
-
-                new ListTile(
-                    leading: new Padding(padding: EdgeInsets.all(25.0)),
+                    leading: new Padding(padding: EdgeInsets.only(right: 20.0)),
                     title: new TextFormField(
                       keyboardType: TextInputType.number,
-                      maxLength: 100,
                       decoration: new InputDecoration(
                         labelText: "#Subcaudals",
                       ),
@@ -539,48 +581,105 @@ class MyCustomFormState extends State<MyCustomForm> {
 
                 new ListTile(
                     leading: const Icon(Icons.palette),
-                    title: new DropdownButton<String>(
-                        hint: Text('Color'),
-                        value: _data.kc_color,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _data.kc_color = newValue;
-                          });
-                        },
-                        items: _kc_colors.map((String value) {
-                          return new DropdownMenuItem<String>(
-                            value: value,
-                            child: new Text(value),
-                          );
-                        }).toList()
+                    title: new InputDecorator(
+                      decoration: new InputDecoration(),
+                      child: new DropdownButtonHideUnderline(
+                          child: new DropdownButton<String>(
+                              value: _data.kcColor,
+                              isDense: true,
+                              onChanged: (String newValue) {
+                                setState(() {
+                                  _data.kcColor = newValue;
+                                });
+                              },
+                              items: _kcColors.map((String value) {
+                                return new DropdownMenuItem<String>(
+                                  value: value,
+                                  child: new Text(value),
+                                );
+                              }).toList()
+                          )
+                      )
+                    )
+                ),
+
+                new ListTile(
+                    leading: const Icon(Icons.people),
+                    title: new Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        new Radio<String>(
+                          value: 'male',
+                          groupValue: _data.sex,
+                          activeColor: Colors.blue,
+                          onChanged: (value){
+                            setState(() {
+                              _data.sex = value;
+                            });
+                          },
+                        ),
+                        new Text('Male'),
+                        new Container(
+                            width: 50.0,
+                            height: 80.0
+                        ),
+                        new Radio<String>(
+                          value: 'female',
+                          groupValue: _data.sex,
+                          onChanged: (value){
+                            setState(() {
+                              _data.sex = value;
+                            });
+                          },
+                        ),
+                        new Text('Female')
+                      ],
                     )
                 ),
 
                 new ListTile(
                     leading: const Icon(Icons.security),
-                    title: new DropdownButton<String>(
-                        hint: Text('Behavior'),
-                        value: _data.behavior,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _data.behavior = newValue;
-                          });
-                        },
-                        items: _behaviors.map((String value) {
-                          return new DropdownMenuItem<String>(
-                            value: value,
-                            child: new Text(value),
-                          );
-                        }).toList()
+                    title: new Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        new Radio<String>(
+                          value: 'docile',
+                          groupValue: _data.behavior,
+                          activeColor: Colors.blue,
+                          onChanged: (value){
+                            setState(() {
+                              _data.behavior = value;
+                            });
+                          },
+                        ),
+                        new Text('Docile'),
+                        new Container(
+                            width: 38.0,
+                        ),
+                        new Radio<String>(
+                          value: 'defensive',
+                          groupValue: _data.behavior,
+                          onChanged: (value){
+                            setState(() {
+                              _data.behavior = value;
+                            });
+                          },
+                        ),
+                        new Text('Defensive')
+                      ],
                     )
                 ),
 
-                new ListTile(
+                /*new ListTile(
                   leading: new IconButton(
                       icon: new Icon(Icons.photo_library),
                       onPressed: getImage
                   ),
-                ),
+                ),*/
 
 
 
