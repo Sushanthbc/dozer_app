@@ -4,7 +4,7 @@ part of dozer;
 class FormSnake extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'KCRE';
+    final appTitle = 'Snake Form';
 
     return MaterialApp(
       title: appTitle,

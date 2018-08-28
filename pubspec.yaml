@@ -9,8 +9,8 @@ dependencies:
   serialization: 0.10.0
   http: 0.11.3+16
 
-  firebase_auth: 0.5.18
-  google_sign_in: 2.1.2
+  firebase_auth: 0.5.4
+  google_sign_in: 3.0.1
   cupertino_icons: ^0.1.0
 
 

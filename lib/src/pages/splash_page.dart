@@ -15,7 +15,7 @@ class _SplashPageState extends State<SplashPage> {
     _auth.onAuthStateChanged
         .firstWhere((user) => user != null)
         .then((user) {
-      Navigator.of(context).pushReplacementNamed('/todos');
+          Navigator.pushNamed(context, '/snakeForm');
     });
 
     // Give the navigation animations, etc, some time to finish
@@ -41,4 +41,5 @@ class _SplashPageState extends State<SplashPage> {
       ),
     );
   }
+
 }

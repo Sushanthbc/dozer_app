@@ -24,7 +24,11 @@ class DozerApp extends StatelessWidget {
         fontFamily: 'Helvetica Neue',
         primarySwatch: Colors.blueGrey,
       ),
-      home: new SplashPage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => new SplashPage(),
+        '/snakeForm': (context) => new FormSnake(),
+      },
     );
   }
 }
