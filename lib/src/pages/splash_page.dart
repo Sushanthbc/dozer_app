@@ -15,7 +15,7 @@ class _SplashPageState extends State<SplashPage> {
     _auth.onAuthStateChanged
         .firstWhere((user) => user != null)
         .then((user) {
-          Navigator.pushNamed(context, '/snakeForm');
+          Navigator.pushNamed(context, '/snakesList');
     });
 
     // Give the navigation animations, etc, some time to finish
@@ -32,6 +32,7 @@ class _SplashPageState extends State<SplashPage> {
           new Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              //new Image.asset('assets/images/KC_splash.jpg'),
               new CircularProgressIndicator(),
               new SizedBox(width: 20.0),
               new Text("Please wait..."),

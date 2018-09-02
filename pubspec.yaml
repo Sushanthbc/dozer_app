@@ -5,12 +5,12 @@ dependencies:
   flutter:
     sdk: flutter
   image_picker: 0.4.7
-  date_format: 1.0.4
-  serialization: 0.10.0
-  http: 0.11.3+16
+  date_format: 1.0.5
+  serializable: 0.11.0+1
+  http: 0.11.3+17
 
-  firebase_auth: 0.5.4
-  google_sign_in: 3.0.1
+  firebase_auth: 0.5.19
+  google_sign_in: 3.0.5
   cupertino_icons: ^0.1.0
 
 

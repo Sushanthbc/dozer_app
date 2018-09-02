@@ -6,15 +6,12 @@ class FormSnake extends StatelessWidget {
   Widget build(BuildContext context) {
     final appTitle = 'Snake Form';
 
-    return MaterialApp(
-      title: appTitle,
-      home: Scaffold(
+    return new Scaffold(
         appBar: AppBar(
             title: Text(appTitle)
         ),
         body: MyCustomForm(),
-      ),
-    );
+      );
 
   }
 }
