@@ -69,6 +69,7 @@ class SnakesListViewState extends State<SnakesListView>{
     List<User> list = new List();
     for (int i = 0; i < data.length; i++) {
       User user = new User(
+        village: data[i]["village"],
         snake_length: data[i]["snake_length"],
         snake_length_unit: data[i]["snake_length_unit"],
         snake_weight: data[i]["snake_weight"],
@@ -86,7 +87,7 @@ class SnakesListViewState extends State<SnakesListView>{
   Widget build(BuildContext context) {
 
     return new FutureBuilder<List<User>>(
-      future: _getSnakesList(),
+      future:  _getSnakesList(),
       builder: (context, snapshot) {
 
         if (snapshot.hasData) {
@@ -97,6 +98,7 @@ class SnakesListViewState extends State<SnakesListView>{
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       new Card(
+                        margin: EdgeInsets.all(10.0),
                         child: new Column(
                           children: <Widget>[
                             new Row(
@@ -104,16 +106,68 @@ class SnakesListViewState extends State<SnakesListView>{
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
-                                new Text(snapshot.data[index].snake_length.toString(),
-                                    style: new TextStyle(fontWeight: FontWeight.bold))
+                                new Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: new Text(
+                                      snapshot.data[index].village,
+                                      style: new TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 22.0
+                                      )
+                                  ),
+                                )
                               ],
                             ),
                             new Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                new Text(snapshot.data[index].snake_color),
-                                new Text(snapshot.data[index].snake_sex),
-                                new Text(snapshot.data[index].snake_length_unit),
+                                new Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: new Text(snapshot.data[index].snake_color + ' ' + snapshot.data[index].snake_sex),
+                                ),
+                                new Container(
+                                  child: new Padding(
+                                    padding: EdgeInsets.all(5.0),
+                                    child: new Row(
+                                      children: <Widget>[
+                                        new Icon(Icons.compare_arrows),
+                                        new Text(snapshot.data[index].snake_length.toString() + ' ' +  snapshot.data[index].snake_length_unit),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                new Container(
+                                  child: new Row(
+                                    children: <Widget>[
+                                      new Padding(
+                                        padding: EdgeInsets.all(5.0),
+                                        child: new Icon(Icons.fitness_center),
+                                      ),
+                                      new Padding(
+                                        padding: EdgeInsets.all(5.0),
+                                        child: new Text(
+                                          snapshot.data[index].snake_weight.toString() + ' ' + snapshot.data[index].snake_weight_unit
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
                                 //new Text(snapshot.data[index].snake_length_unit)
+                              ],
+                            ),
+                            new Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                new Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: new Text(
+                                    DateTime.parse(snapshot.data[index].rescue_date_time).day.toString() + '-' +
+                                    DateTime.parse(snapshot.data[index].rescue_date_time).month.toString() + '-' +
+                                    DateTime.parse(snapshot.data[index].rescue_date_time).year.toString() + ' ' +
+                                    DateTime.parse(snapshot.data[index].rescue_date_time).hour.toString() + ':' +
+                                        DateTime.parse(snapshot.data[index].rescue_date_time).minute.toString()
+                                  ),
+                                )
                               ],
                             )
                           ],
