@@ -4,7 +4,7 @@ part of dozer;
 class FormSnake extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'Snake Form';
+    final appTitle = 'Rescue Form';
 
     return new Scaffold(
         appBar: AppBar(

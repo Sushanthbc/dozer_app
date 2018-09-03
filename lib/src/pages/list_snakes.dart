@@ -83,6 +83,14 @@ class SnakesListViewState extends State<SnakesListView>{
     return list;
   }
 
+  Color _getColor(String snakeColor){
+    Color rgbColor = Color.fromRGBO(0, 0, 0, 1.0);
+    if (snakeColor.toLowerCase() == 'brown') {
+      rgbColor = Color.fromRGBO(165, 90, 42, 1.0);
+    }
+    return rgbColor;
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -97,64 +105,128 @@ class SnakesListViewState extends State<SnakesListView>{
                 return new Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      new Card(
-                        margin: EdgeInsets.all(10.0),
-                        child: new Column(
+                      new Column(
                           children: <Widget>[
+
+                            new Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                new Container(
+                                  padding: EdgeInsets.only(left:20.0, top:10.0),
+                                  child: new Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      new Container(
+                                        child: new Padding(
+                                          padding: EdgeInsets.only(top:10.0),
+                                          child: new Row(
+                                            children: <Widget>[
+                                              new Padding(
+                                                padding: EdgeInsets.all(5.0),
+                                                child: new Icon(
+                                                    Icons.palette,
+                                                    color: _getColor(snapshot.data[index].snake_color)
+                                                ),
+                                              ),
+                                              new Padding(
+                                                padding: EdgeInsets.all(5.0),
+                                                child: new Text(
+                                                    snapshot.data[index].snake_color + ' ' +
+                                                    snapshot.data[index].snake_sex
+                                                ),
+                                              ),
+
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                ),
+
+                                //new Text(snapshot.data[index].snake_length_unit)
+                              ],
+                            ),
+
+                            new Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                new Container(
+                                  child: new Padding(
+                                    padding: EdgeInsets.only(left: 20.0,top:10.0),
+                                    child: new Row(
+                                      children: <Widget>[
+                                        new Padding(
+                                          padding: EdgeInsets.all(5.0),
+                                          child: new Icon(
+                                            Icons.compare_arrows,
+                                              color: Colors.black54
+                                          ),
+                                        ),
+                                        new Padding(
+                                          padding: EdgeInsets.all(5.0),
+                                          child: new Text(
+                                            snapshot.data[index].snake_length.toString() + ' '
+                                            +  snapshot.data[index].snake_length_unit
+                                          ),
+                                        ),
+
+                                      ],
+                                    ),
+                                  ),
+                                ),
+
+                                new Container(
+                                  margin: EdgeInsets.only(right: 10.0),
+                                  child: new Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: <Widget>[
+                                      new Padding(
+                                        padding: EdgeInsets.all(5.0),
+                                        child: new Icon(
+                                          Icons.fitness_center,
+                                          color: Colors.black54
+                                        ),
+                                      ),
+                                      new Padding(
+                                        padding: EdgeInsets.all(5.0),
+                                        child: new Text(
+                                            snapshot.data[index].snake_weight.toString() + ' ' + snapshot.data[index].snake_weight_unit
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
+
+
+                              ],
+                            ),
+
+
+
                             new Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
                                 new Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: new Text(
-                                      snapshot.data[index].village,
-                                      style: new TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 22.0
-                                      )
+                                  padding: EdgeInsets.only(left:20.0,top:10.0),
+                                  child: new Icon(
+                                    Icons.location_on,
+                                    color: Colors.black54
                                   ),
-                                )
-                              ],
-                            ),
-                            new Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
+                                ),
                                 new Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: new Text(snapshot.data[index].snake_color + ' ' + snapshot.data[index].snake_sex),
-                                ),
-                                new Container(
-                                  child: new Padding(
-                                    padding: EdgeInsets.all(5.0),
-                                    child: new Row(
-                                      children: <Widget>[
-                                        new Icon(Icons.compare_arrows),
-                                        new Text(snapshot.data[index].snake_length.toString() + ' ' +  snapshot.data[index].snake_length_unit),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                new Container(
-                                  child: new Row(
-                                    children: <Widget>[
-                                      new Padding(
-                                        padding: EdgeInsets.all(5.0),
-                                        child: new Icon(Icons.fitness_center),
-                                      ),
-                                      new Padding(
-                                        padding: EdgeInsets.all(5.0),
-                                        child: new Text(
-                                          snapshot.data[index].snake_weight.toString() + ' ' + snapshot.data[index].snake_weight_unit
-                                        ),
-                                      )
-                                    ],
+                                  padding: EdgeInsets.only(top: 10.0,left: 10.0),
+                                  child: new Text(
+                                      snapshot.data[index].village
                                   ),
                                 )
-                                //new Text(snapshot.data[index].snake_length_unit)
                               ],
                             ),
+
                             new Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: <Widget>[
@@ -172,10 +244,10 @@ class SnakesListViewState extends State<SnakesListView>{
                             )
                           ],
                         ),
-                      )
+                        new Divider(color: Colors.grey,)
+                      ]
+                  );
 
-                    ]
-                );
               }
           );
         } else if (snapshot.hasError) {
@@ -183,7 +255,17 @@ class SnakesListViewState extends State<SnakesListView>{
         }
 
         // By default, show a loading spinner
-        return new CircularProgressIndicator();
+        return new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                new CircularProgressIndicator()
+              ],
+            )
+          ],
+        );
       },
     );
 
