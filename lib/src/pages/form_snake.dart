@@ -671,6 +671,24 @@ class MyCustomFormState extends State<MyCustomForm> {
                     )
                 ),
 
+                new Padding(
+                  padding: EdgeInsets.only(left:20.0, right:20.0),
+                  child: new TextFormField(
+                    decoration: new InputDecoration(
+                        labelText: 'General Remarks'
+                    ),
+                  ),
+                ),
+
+                new Padding(
+                  padding: EdgeInsets.only(left:20.0, right:20.0, top:10.0, bottom: 20.0),
+                  child: new TextFormField(
+                    decoration: new InputDecoration(
+                        labelText: 'Bite Report'
+                    ),
+                  ),
+                ),
+
                 /*new ListTile(
                   leading: new IconButton(
                       icon: new Icon(Icons.photo_library),
@@ -689,7 +707,7 @@ class MyCustomFormState extends State<MyCustomForm> {
                     ),
                   ),
                   onPressed: this.submit,
-                  color: Colors.blue,
+                  color: Colors.blue
                 )
 
               ],

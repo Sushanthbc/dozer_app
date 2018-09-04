@@ -11,6 +11,14 @@ class ListSnakes extends StatelessWidget{
         title: Text(appTitle),
         actions: <Widget>[
           IconButton(
+            icon: Icon(Icons.backspace),
+            onPressed: (){
+              _auth.signOut().then((value){
+                Navigator.pushNamed(context, '/');
+              });
+            },
+          ),
+          IconButton(
               icon: Icon(Icons.add),
               onPressed: (){
                 Navigator.pushNamed(context, '/snakeForm');
@@ -31,54 +39,41 @@ class SnakesListView extends StatefulWidget{
   }
 }
 
-class User {
-  double snake_length;
-  String snake_length_unit;
-  double snake_weight;
-  String snake_weight_unit;
-  String snake_sex;
-  String snake_color;
-  String village;
-  String rescue_date_time;
-  int id;
-  User({
-    this.snake_length,
-    this.snake_length_unit,
-    this.snake_weight,
-    this.snake_weight_unit,
-    this.snake_sex,
-    this.snake_color,
-    this.village,
-    this.rescue_date_time
-  });
-}
 
 class SnakesListViewState extends State<SnakesListView>{
 
-  Future<List<User>> _getSnakesList() async {
+  Future<List<SnakeInfo>> _getSnakesList() async {
     final response = await http.get('https://morning-castle-37512.herokuapp.com/api/snake_charms');
     print('GET request');
     print(response.body);
     var responseJson = json.decode(response.body.toString());
-    List<User> userList = createUserList(responseJson["snake_charm"]);
-    return userList;
-
+    List<SnakeInfo> snakesList = _createSnakesList(responseJson["snake_charm"]);
+    return snakesList;
   }
 
-  List<User> createUserList(List data){
-    List<User> list = new List();
-    for (int i = 0; i < data.length; i++) {
-      User user = new User(
-        village: data[i]["village"],
-        snake_length: data[i]["snake_length"],
-        snake_length_unit: data[i]["snake_length_unit"],
-        snake_weight: data[i]["snake_weight"],
-        snake_weight_unit: data[i]["snake_weight_unit"],
-        snake_color: data[i]["snake_color"],
-        snake_sex: data[i]["snake_sex"],
-        rescue_date_time: data[i]["rescue_date_time"]
+  List<SnakeInfo> _createSnakesList(List dataFromServer){
+    List<SnakeInfo> list = new List();
+    for (int i=0; i<dataFromServer.length; i++){
+      SnakeInfo snakeInfo = new SnakeInfo(
+        snakeLength: dataFromServer[i]["snake_length"],
+        snakeLengthUnit: dataFromServer[i]["snake_length_unit"],
+        snakeWeight: dataFromServer[i]["snake_weight"],
+        snakeWeightUnit: dataFromServer[i]["snake_weight_unit"],
+        snakeColor: dataFromServer[i]["snake_color"],
+        snakeSex: dataFromServer[i]["snake_sex"],
+        dividedSubCaudals: dataFromServer[i]["snake_divided_sub_caudals"],
+        undividedSubCaudals: dataFromServer[i]["snake_undivided_sub_caudals"],
+        snakeCondition: dataFromServer[i]["snake_condition"],
+        rescueDateTime: dataFromServer[i]["rescue_date_time"],
+        callerName: dataFromServer[i]["caller_name"],
+        callerPhone: dataFromServer[i]["caller_phone"],
+        address: dataFromServer[i]["address"],
+        village: dataFromServer[i]["village"],
+        pincode: dataFromServer[i]["pincode"],
+        macroHabitat: dataFromServer[i]["snake_macro_habitat"],
+        microHabitat: dataFromServer[i]["snake_micro_habitat"]
       );
-      list.add(user);
+      list.add(snakeInfo);
     }
     return list;
   }
@@ -94,7 +89,7 @@ class SnakesListViewState extends State<SnakesListView>{
   @override
   Widget build(BuildContext context) {
 
-    return new FutureBuilder<List<User>>(
+    return new FutureBuilder<List<SnakeInfo>>(
       future:  _getSnakesList(),
       builder: (context, snapshot) {
 
@@ -112,6 +107,7 @@ class SnakesListViewState extends State<SnakesListView>{
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
+
                                 new Container(
                                   padding: EdgeInsets.only(left:20.0, top:10.0),
                                   child: new Row(
@@ -126,14 +122,14 @@ class SnakesListViewState extends State<SnakesListView>{
                                                 padding: EdgeInsets.all(5.0),
                                                 child: new Icon(
                                                     Icons.palette,
-                                                    color: _getColor(snapshot.data[index].snake_color)
+                                                    color: _getColor(snapshot.data[index].snakeColor)
                                                 ),
                                               ),
                                               new Padding(
                                                 padding: EdgeInsets.all(5.0),
                                                 child: new Text(
-                                                    snapshot.data[index].snake_color + ' ' +
-                                                    snapshot.data[index].snake_sex
+                                                    snapshot.data[index].snakeColor + ' ' +
+                                                    snapshot.data[index].snakeSex
                                                 ),
                                               ),
 
@@ -144,6 +140,21 @@ class SnakesListViewState extends State<SnakesListView>{
                                     ],
                                   )
                                 ),
+
+                                new IconButton(
+                                    icon: new Icon(Icons.keyboard_arrow_right),
+                                    color: Colors.blue,
+                                    onPressed: (){
+                                      print(index);
+                                      //Navigator.pushNamed(context, '/snakeDetail');
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => DetailScreen(snakeInfo: snapshot.data[index]),
+                                        ),
+                                      );
+                                    }
+                                )
 
                                 //new Text(snapshot.data[index].snake_length_unit)
                               ],
@@ -168,8 +179,8 @@ class SnakesListViewState extends State<SnakesListView>{
                                         new Padding(
                                           padding: EdgeInsets.all(5.0),
                                           child: new Text(
-                                            snapshot.data[index].snake_length.toString() + ' '
-                                            +  snapshot.data[index].snake_length_unit
+                                            snapshot.data[index].snakeLength.toString() + ' '
+                                            +  snapshot.data[index].snakeLengthUnit
                                           ),
                                         ),
 
@@ -193,7 +204,7 @@ class SnakesListViewState extends State<SnakesListView>{
                                       new Padding(
                                         padding: EdgeInsets.all(5.0),
                                         child: new Text(
-                                            snapshot.data[index].snake_weight.toString() + ' ' + snapshot.data[index].snake_weight_unit
+                                            snapshot.data[index].snakeWeight.toString() + ' ' + snapshot.data[index].snakeWeightUnit
                                         ),
                                       )
                                     ],
@@ -233,11 +244,11 @@ class SnakesListViewState extends State<SnakesListView>{
                                 new Padding(
                                   padding: EdgeInsets.all(10.0),
                                   child: new Text(
-                                    DateTime.parse(snapshot.data[index].rescue_date_time).day.toString() + '-' +
-                                    DateTime.parse(snapshot.data[index].rescue_date_time).month.toString() + '-' +
-                                    DateTime.parse(snapshot.data[index].rescue_date_time).year.toString() + ' ' +
-                                    DateTime.parse(snapshot.data[index].rescue_date_time).hour.toString() + ':' +
-                                        DateTime.parse(snapshot.data[index].rescue_date_time).minute.toString()
+                                    DateTime.parse(snapshot.data[index].rescueDateTime).day.toString() + '-' +
+                                    DateTime.parse(snapshot.data[index].rescueDateTime).month.toString() + '-' +
+                                    DateTime.parse(snapshot.data[index].rescueDateTime).year.toString() + ' ' +
+                                    DateTime.parse(snapshot.data[index].rescueDateTime).hour.toString() + ':' +
+                                        DateTime.parse(snapshot.data[index].rescueDateTime).minute.toString()
                                   ),
                                 )
                               ],
