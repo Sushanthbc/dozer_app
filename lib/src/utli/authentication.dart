@@ -27,9 +27,11 @@ Future<FirebaseUser> signInWithGoogle() async {
   return user;
 }
 
-Future<Null> signOutWithGoogle() async {
+Future<GoogleSignInAccount> signOutWithGoogle() async {
   // Sign out with firebase
   await _auth.signOut();
   // Sign out with google
   await _googleSignIn.signOut();
+
+  return _googleSignIn.disconnect();
 }
