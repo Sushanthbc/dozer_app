@@ -10,18 +10,32 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
 
-    new Timer(const Duration(seconds: 5), () {
+    new Timer(const Duration(seconds: 2), () {
       // Listen for our auth event (on reload or start)
       // Go to our /todos page once logged in
       _auth.onAuthStateChanged
           .firstWhere((user) => user != null)
           .then((user) {
-        Navigator.pushNamed(context, '/snakesList');
+            print('From Firebase');
+            print(user);
+            UserInfo _newUserInfo = new UserInfo();
+            _newUserInfo.name = user.displayName;
+            _newUserInfo.phone = user.phoneNumber;
+            _newUserInfo.email = user.email;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NewUserForm(userInfo: _newUserInfo),
+              ),
+            );
+        //Navigator.pushNamed(context, '/snakesList');
       });
 
       // Give the navigation animations, etc, some time to finish
-      new Future.delayed(new Duration(seconds: 4))
-          .then((_) => signInWithGoogle());
+      new Future.delayed(new Duration(seconds: 2))
+        .then((_) => signInWithGoogle().then((onValue){
+          //print(onValue);
+      }));
     });
 
 
