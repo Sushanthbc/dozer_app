@@ -25,7 +25,7 @@ class _SplashPageState extends State<SplashPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => NewUserForm(userInfo: _newUserInfo),
+                builder: (context) => callBackUserForm()
               ),
             );
         //Navigator.pushNamed(context, '/snakesList');

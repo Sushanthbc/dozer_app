@@ -1,20 +1,22 @@
 part of dozer;
 
-class NewUserForm extends StatelessWidget{
-  final UserInfo userInfo;
-  NewUserForm({Key key, @required this.userInfo}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-
-    return new Scaffold(
-      body: UserRegistrationForm()
-    );
-  }
-}
+//class NewUserForm extends StatelessWidget{
+//  final UserInfo userInfo;
+//  NewUserForm({Key key, @required this.userInfo}) : super(key: key);
+//
+//  @override
+//  Widget build(BuildContext context) {
+//
+//    return new Scaffold(
+//      body: UserRegistrationForm()
+//    );
+//  }
+//}
 
 
 class UserRegistrationForm extends StatefulWidget{
+  final UserInfo userInfo;
+  UserRegistrationForm({Key key, this.userInfo}) : super(key: key);
   @override
   UserRegistrationFormState createState(){
     return UserRegistrationFormState();
@@ -26,6 +28,7 @@ class UserRegistrationFormState extends State<UserRegistrationForm>{
 
   final _formKey = GlobalKey<FormState>();
 
+  //TODO: We have to move away from dropdown to something else
   List<String> _aboutList = ['Rescuer','Researcher','Enthusiast'];
 
 
@@ -70,7 +73,7 @@ class UserRegistrationFormState extends State<UserRegistrationForm>{
                           labelText: 'Name'
                       ),
                       onSaved: (value){
-                        _userInfo.name = value;
+                        widget.userInfo.name = value;
                       },
                     ),
                   ),
@@ -83,7 +86,7 @@ class UserRegistrationFormState extends State<UserRegistrationForm>{
                           labelText: 'Phone'
                       ),
                       onSaved: (value){
-                        _userInfo.phone = value;
+                        widget.userInfo.phone = value;
                       },
                     ),
                   ),
@@ -92,12 +95,12 @@ class UserRegistrationFormState extends State<UserRegistrationForm>{
                     leading: new Icon(Icons.email),
                     title: new TextFormField(
                       enabled: false,
-                      initialValue: _userInfo.email,
+                      initialValue: widget.userInfo.email,
                       decoration: new InputDecoration(
                         labelText: 'Email'
                       ),
                       onSaved: (value){
-                        _userInfo.email = value;
+                        widget.userInfo.email = value;
                       },
                     ),
                   ),
@@ -110,11 +113,11 @@ class UserRegistrationFormState extends State<UserRegistrationForm>{
                       ),
                       child: new DropdownButtonHideUnderline(
                           child: new DropdownButton<String>(
-                              value: _userInfo.about,
+                              value: widget.userInfo.about,
                               isDense: true,
                               onChanged: (String newValue) {
                                 setState(() {
-                                  _userInfo.about = newValue;
+                                  widget.userInfo.about = newValue;
                                 });
                               },
                               items: _aboutList.map((String value) {
@@ -139,7 +142,7 @@ class UserRegistrationFormState extends State<UserRegistrationForm>{
                         hintText: 'I rescue King Cobras and \nwould like share my data \nfor research.'
                       ),
                       onSaved: (value){
-                        _userInfo.purpose = value;
+                        widget.userInfo.purpose = value;
                       },
                     ),
                   ),

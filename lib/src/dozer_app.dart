@@ -10,13 +10,15 @@ import 'package:date_format/date_format.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-part 'utli/authentication.dart';
-part 'utli/snake_info.dart';
+part 'util/authentication.dart';
+part 'util/snake_info.dart';
+part 'util/user_info.dart';
 
 part 'pages/splash_page.dart';
 part 'pages/form_snake.dart';
 part 'pages/list_snakes.dart';
 part 'pages/snake_details.dart';
+part 'pages/form_new_user.dart';
 
 class DozerApp extends StatelessWidget {
   @override
