@@ -69,6 +69,7 @@ class UserRegistrationFormState extends State<UserRegistrationForm>{
                   new ListTile(
                     leading: new Icon(Icons.person),
                     title: new TextFormField(
+                      initialValue: widget.userInfo.name,
                       decoration: new InputDecoration(
                           labelText: 'Name'
                       ),
@@ -81,6 +82,7 @@ class UserRegistrationFormState extends State<UserRegistrationForm>{
                   new ListTile(
                     leading: new Icon(Icons.phone),
                     title: new TextFormField(
+                      initialValue: widget.userInfo.phone,
                       keyboardType: TextInputType.phone,
                       decoration: new InputDecoration(
                           labelText: 'Phone'
