@@ -1,6 +1,8 @@
 library dozer;
 
 import 'dart:async';
+//import 'package:path/path.dart';
+import 'package:async/async.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +14,13 @@ import 'package:http/http.dart' as http;
 
 part 'utli/authentication.dart';
 part 'utli/snake_info.dart';
+part 'utli/image_info.dart';
 
 part 'pages/splash_page.dart';
 part 'pages/form_snake.dart';
 part 'pages/list_snakes.dart';
 part 'pages/snake_details.dart';
+part 'pages/form_edit_snake.dart';
 
 class DozerApp extends StatelessWidget {
   @override
@@ -31,7 +35,7 @@ class DozerApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => new SplashPage(),
-        '/snakeForm': (context) => new FormSnake(),
+        '/snakeForm': (context) => new NewRescueForm(),
         '/snakesList': (context) => new ListSnakes(),
         '/snakeDetail': (context) => new DetailScreen()
       },

@@ -21,7 +21,15 @@ class ListSnakes extends StatelessWidget{
           IconButton(
               icon: Icon(Icons.add),
               onPressed: (){
-                Navigator.pushNamed(context, '/snakeForm');
+                //Navigator.pushNamed(context, '/snakeForm');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NewRescueForm(
+                      action: 'create',
+                    ),
+                  ),
+                );
               }
           )
         ],
@@ -45,6 +53,7 @@ class SnakesListViewState extends State<SnakesListView>{
   Future<List<SnakeInfo>> _getSnakesList() async {
     final response = await http.get('https://morning-castle-37512.herokuapp.com/api/snake_charms');
     print('GET request');
+    print(response.statusCode);
     print(response.body);
     var responseJson = json.decode(response.body.toString());
     List<SnakeInfo> snakesList = _createSnakesList(responseJson["snake_charm"]);
@@ -55,9 +64,9 @@ class SnakesListViewState extends State<SnakesListView>{
     List<SnakeInfo> list = new List();
     for (int i=0; i<dataFromServer.length; i++){
       SnakeInfo snakeInfo = new SnakeInfo(
-        snakeLength: dataFromServer[i]["snake_length"],
+        snakeLength: dataFromServer[i]["snake_length"].toString(),
         snakeLengthUnit: dataFromServer[i]["snake_length_unit"],
-        snakeWeight: dataFromServer[i]["snake_weight"],
+        snakeWeight: dataFromServer[i]["snake_weight"].toString(),
         snakeWeightUnit: dataFromServer[i]["snake_weight_unit"],
         snakeColor: dataFromServer[i]["snake_color"],
         snakeSex: dataFromServer[i]["snake_sex"],
@@ -66,7 +75,7 @@ class SnakesListViewState extends State<SnakesListView>{
         snakeCondition: dataFromServer[i]["snake_condition"],
         rescueDateTime: dataFromServer[i]["rescue_date_time"],
         callerName: dataFromServer[i]["caller_name"],
-        callerPhone: dataFromServer[i]["caller_phone"],
+        callerPhone: dataFromServer[i]["caller_phone"].toString(),
         address: dataFromServer[i]["address"],
         village: dataFromServer[i]["village"],
         pincode: dataFromServer[i]["pincode"],
@@ -129,7 +138,11 @@ class SnakesListViewState extends State<SnakesListView>{
                                                 padding: EdgeInsets.all(5.0),
                                                 child: new Text(
                                                     snapshot.data[index].snakeColor + ' ' +
-                                                    snapshot.data[index].snakeSex
+                                                    snapshot.data[index].snakeSex,
+                                                  style: new TextStyle(
+                                                    color: Colors.black87,
+                                                    fontSize: 18.0
+                                                  ),
                                                 ),
                                               ),
 
@@ -147,16 +160,23 @@ class SnakesListViewState extends State<SnakesListView>{
                                     onPressed: (){
                                       print(index);
                                       //Navigator.pushNamed(context, '/snakeDetail');
-                                      Navigator.push(
+                                      /*Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => DetailScreen(snakeInfo: snapshot.data[index]),
+                                        ),
+                                      );*/
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => NewRescueForm(
+                                              action: snapshot.data[index].id.toString()
+                                          ),
                                         ),
                                       );
                                     }
                                 )
 
-                                //new Text(snapshot.data[index].snake_length_unit)
                               ],
                             ),
 
@@ -262,7 +282,8 @@ class SnakesListViewState extends State<SnakesListView>{
               }
           );
         } else if (snapshot.hasError) {
-          return new Text("${snapshot.error}");
+          print(snapshot.error);
+          return new Text("${snapshot}");
         }
 
         // By default, show a loading spinner
