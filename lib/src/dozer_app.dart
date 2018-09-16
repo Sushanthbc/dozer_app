@@ -12,11 +12,14 @@ import 'package:http/http.dart' as http;
 
 part 'utli/authentication.dart';
 part 'utli/snake_info.dart';
+part 'utli/drawer_main.dart';
+part 'utli/app_user_info.dart';
 
 part 'pages/splash_page.dart';
 part 'pages/form_snake.dart';
 part 'pages/list_snakes.dart';
 part 'pages/snake_details.dart';
+part 'pages/list_users.dart';
 
 class DozerApp extends StatelessWidget {
   @override
@@ -33,7 +36,8 @@ class DozerApp extends StatelessWidget {
         '/': (context) => new SplashPage(),
         '/snakeForm': (context) => new FormSnake(),
         '/snakesList': (context) => new ListSnakes(),
-        '/snakeDetail': (context) => new DetailScreen()
+        '/snakeDetail': (context) => new DetailScreen(),
+        '/usersList': (context) => new UsersList(),
       },
     );
   }

@@ -16,7 +16,7 @@ class _SplashPageState extends State<SplashPage> {
       _auth.onAuthStateChanged
           .firstWhere((user) => user != null)
           .then((user) {
-        Navigator.pushNamed(context, '/snakesList');
+        Navigator.pushReplacementNamed(context, '/snakesList');
       });
 
       // Give the navigation animations, etc, some time to finish
