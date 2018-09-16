@@ -1,6 +1,6 @@
 part of dozer;
 
-UserInfo _newUserInfo;
+AppUserInfo _newUserInfo;
 bool isNewUser = false;
 
 class SplashPage extends StatefulWidget {
@@ -19,10 +19,10 @@ class _SplashPageState extends State<SplashPage> {
       _auth.onAuthStateChanged.firstWhere((user) => user != null).then((user) {
         print('From Firebase');
         print(user);
-        _newUserInfo = new UserInfo();
-        _newUserInfo.name = user.displayName;
+        _newUserInfo = new AppUserInfo();
+        _newUserInfo.firstName = user.displayName;
         _newUserInfo.phone = user.phoneNumber;
-        _newUserInfo.email = user.email;
+        _newUserInfo.emailID = user.email;
         isNewUser = true;
         setState(() {
 

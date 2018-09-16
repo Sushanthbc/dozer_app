@@ -11,12 +11,11 @@ import 'package:date_format/date_format.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-part 'utli/image_info.dart';
+part 'util/image_info.dart';
 part 'util/authentication.dart';
 part 'util/snake_info.dart';
-part 'utli/drawer_main.dart';
-part 'utli/app_user_info.dart';
-part 'util/user_info.dart';
+part 'util/drawer_main.dart';
+part 'util/app_user_info.dart';
 
 part 'pages/splash_page.dart';
 part 'pages/form_snake.dart';
