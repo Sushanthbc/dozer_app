@@ -7,6 +7,7 @@ class ListSnakes extends StatelessWidget{
     final appTitle = 'List';
 
     return new Scaffold(
+      drawer: DrawerMain.mainDrawer(context),
       appBar: AppBar(
         title: Text(appTitle),
         actions: <Widget>[
