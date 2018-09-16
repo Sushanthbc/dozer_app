@@ -15,7 +15,7 @@ part of dozer;
 
 
 class UserRegistrationForm extends StatefulWidget{
-  final UserInfo userInfo;
+  final AppUserInfo userInfo;
   UserRegistrationForm({Key key, this.userInfo}) : super(key: key);
   @override
   UserRegistrationFormState createState(){
@@ -69,12 +69,12 @@ class UserRegistrationFormState extends State<UserRegistrationForm>{
                   new ListTile(
                     leading: new Icon(Icons.person),
                     title: new TextFormField(
-                      initialValue: widget.userInfo.name,
+                      initialValue: widget.userInfo.firstName,
                       decoration: new InputDecoration(
                           labelText: 'Name'
                       ),
                       onSaved: (value){
-                        widget.userInfo.name = value;
+                        widget.userInfo.firstName = value;
                       },
                     ),
                   ),
@@ -97,12 +97,12 @@ class UserRegistrationFormState extends State<UserRegistrationForm>{
                     leading: new Icon(Icons.email),
                     title: new TextFormField(
                       enabled: false,
-                      initialValue: widget.userInfo.email,
+                      initialValue: widget.userInfo.emailID,
                       decoration: new InputDecoration(
                         labelText: 'Email'
                       ),
                       onSaved: (value){
-                        widget.userInfo.email = value;
+                        widget.userInfo.emailID = value;
                       },
                     ),
                   ),
@@ -115,11 +115,11 @@ class UserRegistrationFormState extends State<UserRegistrationForm>{
                       ),
                       child: new DropdownButtonHideUnderline(
                           child: new DropdownButton<String>(
-                              value: widget.userInfo.about,
+                              value: widget.userInfo.aboutUser,
                               isDense: true,
                               onChanged: (String newValue) {
                                 setState(() {
-                                  widget.userInfo.about = newValue;
+                                  widget.userInfo.aboutUser = newValue;
                                 });
                               },
                               items: _aboutList.map((String value) {
