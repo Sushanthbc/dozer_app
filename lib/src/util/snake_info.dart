@@ -92,7 +92,7 @@ class SnakeInfo {
     map['snake_condition'] = snakeCondition;
     map['subcaudals'] = "D:" + dividedSubCaudals + ";" + "U:" + undividedSubCaudals;
     map['release_date'] = null;
-    map['user_id'] = 1;
+    map['user_id'] = SharedPref.getUserId();
     return map;
   }
 

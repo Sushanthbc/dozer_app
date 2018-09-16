@@ -51,14 +51,34 @@ class SnakesListView extends StatefulWidget{
 
 class SnakesListViewState extends State<SnakesListView>{
 
+  static String baseURL = "https://morning-castle-37512.herokuapp.com/api/snake_charms/single_snake_charm/";
+
+  int usrId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCounter();
+  }
+
+  _loadCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      usrId = (prefs.getInt('userId') ?? 0);
+    });
+
+  }
+
   Future<List<SnakeInfo>> _getSnakesList() async {
-    final response = await http.get('https://morning-castle-37512.herokuapp.com/api/snake_charms');
+    print('BASE:' + baseURL + usrId.toString());
+    final response = await http.get(baseURL + usrId.toString());
     print('GET request');
     print(response.statusCode);
     print(response.body);
     var responseJson = json.decode(response.body.toString());
     List<SnakeInfo> snakesList = _createSnakesList(responseJson["snake_charm"]);
     return snakesList;
+
   }
 
   List<SnakeInfo> _createSnakesList(List dataFromServer){
@@ -283,8 +303,15 @@ class SnakesListViewState extends State<SnakesListView>{
               }
           );
         } else if (snapshot.hasError) {
-          print(snapshot.error);
-          return new Text("${snapshot}");
+          return Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Icon(Icons.error, color: Colors.red),
+              Text('Error fetching data. Please try after sometime.')
+            ],
+          );
         }
 
         // By default, show a loading spinner

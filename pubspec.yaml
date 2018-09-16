@@ -9,6 +9,7 @@ dependencies:
   date_format: 1.0.5
   serializable: 0.11.0+1
   http: 0.11.3+17
+  shared_preferences: 0.4.2
 
   firebase_auth: 0.5.19
   google_sign_in: 3.0.5

@@ -109,7 +109,7 @@ class NewRescueFormState extends State<NewRescueForm> {
           request = SnakeInfo.getMultiPartFields(request, _data);
           for (File image in _data.images) {
             var file = await http.MultipartFile.fromPath(
-              "snake_charm[snake_photo]",
+              "snake_charm[snake_photos][]",
               image.path,
             );
             request.files.add(file);

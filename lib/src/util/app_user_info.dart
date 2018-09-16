@@ -24,11 +24,13 @@ class AppUserInfo{
 
   Map<String, dynamic> toMap() {
     var map = new Map<String, dynamic>();
+        if (map['id'] != null) {
+          map['id'] = userId;
+        }
         map['first_name'] = firstName;
         map['last_name'] = lastName;
         map['email_id'] = emailID;
         map['phone'] = phone;
-        map['admin'] = isAdmin ? "1" : "0";
         map['about_user'] = aboutUser;
         map['purpose'] = purpose;
     return map;
@@ -40,7 +42,7 @@ class AppUserInfo{
     this.lastName = map['last_name'];
     this.emailID = map['email_id'];
     this.phone = map['phone'];
-    this.isAdmin = map['admin'] == "1" ? true : false;
+    this.isAdmin = map['admin'];
     this.aboutUser = map['about_user'];
     this.purpose = map['purpose'];
   }

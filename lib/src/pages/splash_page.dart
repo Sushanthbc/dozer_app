@@ -16,18 +16,44 @@ class _SplashPageState extends State<SplashPage> {
     new Timer(const Duration(seconds: 2), () {
       // Listen for our auth event (on reload or start)
       // Go to our /todos page once logged in
-      _auth.onAuthStateChanged.firstWhere((user) => user != null).then((user) {
-        print('From Firebase');
-        print(user);
-        _newUserInfo = new AppUserInfo();
-        _newUserInfo.firstName = user.displayName;
-        _newUserInfo.phone = user.phoneNumber;
-        _newUserInfo.emailID = user.email;
-        isNewUser = true;
-        setState(() {
+      _auth.onAuthStateChanged.firstWhere((user) => user != null).then(
 
-        });
-        //Navigator.pushNamed(context, '/snakesList');
+        (user) {
+          var checkUserReq = {
+            "user" : {
+              "email_id" : user.email
+            }
+          };
+          http.post(
+            "https://morning-castle-37512.herokuapp.com/api/users/account_check",
+            body: jsonEncode(checkUserReq),
+            headers: {
+              "accept": "application/json",
+              "content-type": "application/json"
+            }
+          ).then((response){
+            var resp = jsonDecode(response.body.toString());
+            if (resp["user"] == false) {
+              List<String> displayName = user.displayName.split(" ");
+              _newUserInfo = new AppUserInfo();
+              _newUserInfo.firstName = displayName[0];
+              _newUserInfo.lastName = displayName[1];
+              _newUserInfo.phone = user.phoneNumber;
+              _newUserInfo.emailID = user.email;
+              _newUserInfo.aboutUser = "Rescuer";
+              isNewUser = true;
+              setState(() {
+              });
+            } else {
+
+              SharedPref.setUserIdPref(resp["user"]["id"], resp["user"]["admin"]);
+              Navigator.pushReplacementNamed(context, '/snakesList');
+            }
+
+          }, onError: (err){
+            print('error checking first user');
+          });
+
       });
 
       // Give the navigation animations, etc, some time to finish
@@ -77,4 +103,5 @@ class _SplashPageState extends State<SplashPage> {
       return UserRegistrationForm(userInfo: _newUserInfo);
     }
   }
+
 }
