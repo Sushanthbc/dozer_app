@@ -135,13 +135,13 @@ class SnakeInfo {
     multipartRequest.fields['snake_charm[snake_caudals]'] =
         "D:" + formData.dividedSubCaudals + ";" + "U:" + formData.undividedSubCaudals;
 
-    for (int i=0; i<formData.imagesInfo.length; i++){
+    /*for (int i=0; i<formData.imagesInfo.length; i++){
       print('snake_charm[snake_photo_'+ i.toString() +']');
       print('snake_photo_' + i.toString());
       print(formData.imagesInfo[i]['snake_photo_' + i.toString()]);
       multipartRequest.fields['snake_charm[snake_photo_'+ i.toString() +']'] =
          formData.imagesInfo[i]['snake_photo_' + i.toString()].toString();
-    }
+    }*/
     return multipartRequest;
   }
 
