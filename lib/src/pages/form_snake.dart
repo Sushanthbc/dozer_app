@@ -93,12 +93,34 @@ class NewRescueFormState extends State<NewRescueForm> {
   ];
   List<String> _lengthUnits = <String>['Feet', 'Metres'];
   List<String> _weightUnits = <String>['Kg', 'Lbs'];
+  List<String> _latLngUnits = <String>['Degrees Minutes Seconds', 'Decimal Degrees'];
+  List<String> _directions = <String>['North', 'East', 'South', 'West'];
+  String _latLngUnit = 'Decimal Degrees';
+  String _latDir = "North";
+  String _lngDir = "North";
+  Map _dmsLat = {
+    "degrees": null,
+    "minutes": null,
+    "seconds": null,
+    "direction": null
+  };
+  Map _dmsLng = {
+    "degrees": null,
+    "minutes": null,
+    "seconds": null,
+    "direction": null
+  };
 
   void submit() {
     // First validate form.
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save(); // Save our form now.
       httpInProgress = true;
+
+      // Convert DMS LatLng to DD LatLng
+      if (_dmsLat["degrees"] != null){
+
+      }
 
       // Check if images present in request
       if (_data.images.length > 0) {
@@ -108,23 +130,26 @@ class NewRescueFormState extends State<NewRescueForm> {
           var request = new http.MultipartRequest("POST", uri);
           request = SnakeInfo.getMultiPartFields(request, _data);
           for (File image in _data.images) {
+            List<String> imagePath = image.path.split("/");
+            print(imagePath[imagePath.length - 1]);
             var file = await http.MultipartFile.fromPath(
               "snake_charm[snake_photos][]",
               image.path,
             );
             request.files.add(file);
           }
-          request.send().then((response) {
+          /*request.send().then((response) {
             if (response.statusCode == 200) {
               httpInProgress = false;
               new SnackBar(content: new Text("New rescue details saved!"));
               Navigator.pop(context);
             }
-          });
+          });*/
         };
         upload(_data.image);
       } else {
         var req = {"snake_charm": _data.toMap()};
+        print(jsonEncode(req));
         http
             .post("https://morning-castle-37512.herokuapp.com/api/snake_charms",
             headers: {
@@ -136,12 +161,13 @@ class NewRescueFormState extends State<NewRescueForm> {
           httpInProgress = false;
           if (response.statusCode == 200) {
             new SnackBar(content: new Text("New rescue details saved!"));
-            Navigator.pop(context);
+            Navigator.pushReplacementNamed(context, "/userSnakesList");
           }
         });
       }
     } else {
       // TODO validation message display
+      print('validation failed');
     }
   }
 
@@ -181,7 +207,8 @@ class NewRescueFormState extends State<NewRescueForm> {
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey we created above
     return new Scaffold(
-        appBar: AppBar(title: Text('asdf')),
+        appBar: AppBar(title: Text('Rescue Form')),
+        drawer: DrawerMain.mainDrawer(context),
         body: SingleChildScrollView(
             child: Form(
                 key: _formKey,
@@ -235,6 +262,7 @@ class NewRescueFormState extends State<NewRescueForm> {
                         leading: const Icon(Icons.phone),
                         title: new TextFormField(
                           initialValue: _data.callerPhone,
+                          keyboardType: TextInputType.phone,
                           decoration:
                           new InputDecoration(labelText: "Caller Phone"),
                           onSaved: (value) {
@@ -277,7 +305,181 @@ class NewRescueFormState extends State<NewRescueForm> {
                     ),
 
                     new ListTile(
-                        leading: const Icon(Icons.location_on),
+                      leading: const Icon(Icons.location_on),
+                      title: new InputDecorator(
+                        decoration:
+                        new InputDecoration(labelText: "Latitude Longitude Units"),
+                        child: new DropdownButtonHideUnderline(
+                            child: new DropdownButton<String>(
+                                value: _latLngUnit,
+                                isDense: true,
+                                onChanged: (String newValue) {
+                                  setState(() {
+                                    _latLngUnit = newValue;
+                                  });
+                                },
+                                items: _latLngUnits.map((String value) {
+                                  return new DropdownMenuItem<String>(
+                                    value: value,
+                                    child: new Text(value),
+                                  );
+                                }).toList())),
+                      ),
+                    ),
+
+                    _latLngUnit == 'Degrees Minutes Seconds'
+                    ? new Column(
+                      children: <Widget>[
+
+                        new ListTile(
+                          leading: new Padding(padding: EdgeInsets.only(left:24.0)),
+                          title: new Container(
+                              margin: EdgeInsets.only(top:20.0),
+                              child: new Text(
+                                  'Latitude',
+                                style: new TextStyle(
+                                  fontWeight: FontWeight.bold
+                                ),
+                              )
+                          )
+                        ),
+
+                        new Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            new Padding(
+                              padding: EdgeInsets.only(left: 5.0),
+                            ),
+                            new Container(
+                              width: 80.0,
+                              child: new TextFormField(
+                                keyboardType:
+                                new TextInputType.numberWithOptions(
+                                    decimal: false),
+                                decoration:
+                                InputDecoration(labelText: 'Degrees'),
+                                onSaved: (value) {
+                                  _dmsLat["degrees"] = value;
+                                },
+                              ),
+                            ),
+
+                            new Container(
+                              width: 80.0,
+                              child: new TextFormField(
+                                keyboardType:
+                                new TextInputType.numberWithOptions(
+                                    decimal: false),
+                                decoration:
+                                InputDecoration(labelText: 'Minutes'),
+                                onSaved: (value) {
+                                  _dmsLat["minutes"] = value;
+                                },
+                              ),
+                            ),
+
+                            new Container(
+                              width: 80.0,
+                              child: new TextFormField(
+                                keyboardType:
+                                new TextInputType.numberWithOptions(
+                                    decimal: true),
+                                decoration:
+                                InputDecoration(labelText: 'Seconds'),
+                                onSaved: (value) {
+                                  _dmsLat["seconds"] = value;
+                                },
+                              ),
+                            ),
+
+                            new Container(
+                              margin: EdgeInsets.only(right:20.0),
+                              width: 80.0,
+                              child: new TextFormField(
+                                keyboardType:
+                                new TextInputType.numberWithOptions(
+                                    decimal: true),
+                                decoration:
+                                InputDecoration(labelText: 'Direction'),
+                                onSaved: (value) {
+                                  _dmsLat["seconds"] = value;
+                                },
+                              ),
+                            ),
+
+                          ],
+                        ),
+
+                        new ListTile(
+                            leading: new Padding(padding: EdgeInsets.only(left:24.0)),
+                            title: new Container(
+                              margin: EdgeInsets.only(top:20.0),
+                              child: new Text(
+                                  'Longitude',
+                                style: new TextStyle(
+                                    fontWeight: FontWeight.bold
+                                )
+                              )
+                            )
+                        ),
+
+                        new Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            new Padding(
+                              padding: EdgeInsets.only(left: 24.0),
+                            ),
+                            new Container(
+                              width: 80.0,
+                              child: new TextFormField(
+                                keyboardType:
+                                new TextInputType.numberWithOptions(
+                                    decimal: true),
+                                decoration:
+                                InputDecoration(labelText: 'Degrees'),
+                                onSaved: (value) {
+                                  _dmsLng["degrees"] = value;
+                                },
+                              ),
+                            ),
+                            new Container(
+                              width: 80.0,
+                              child: new TextFormField(
+                                keyboardType:
+                                new TextInputType.numberWithOptions(
+                                    decimal: true),
+                                decoration:
+                                InputDecoration(labelText: 'Minutes'),
+                                onSaved: (value) {
+                                  _dmsLng["minutes"] = value;
+                                },
+                              ),
+                            ),
+                            new Container(
+                              width: 80.0,
+                              child: new TextFormField(
+                                keyboardType:
+                                new TextInputType.numberWithOptions(
+                                    decimal: true),
+                                decoration:
+                                InputDecoration(labelText: 'Seconds'),
+                                onSaved: (value) {
+                                  _dmsLng["seconds"] = value;
+                                },
+                              ),
+                            ),
+                          ],
+                        )
+
+                      ],
+                    )
+
+                    : new ListTile(
+                        leading: new Padding(padding: EdgeInsets.only(left:24.0)),
                         title: new Row(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -436,6 +638,13 @@ class NewRescueFormState extends State<NewRescueForm> {
                                   labelText: 'Length',
                                 ),
                                 keyboardType: TextInputType.number,
+                                validator: (value){
+                                  if (value != "" && double.parse(value) < 1.0){
+                                    return "Min : 1";
+                                  } else if (value != "" && double.parse(value) > 20.0){
+                                    return "Max : 15";
+                                  }
+                                },
                                 onSaved: (value) {
                                   _data.snakeLength = value;
                                 },
@@ -482,6 +691,13 @@ class NewRescueFormState extends State<NewRescueForm> {
                                 ),
                                 keyboardType: TextInputType.numberWithOptions(
                                     decimal: true),
+                                validator: (value){
+                                  if (value != "" && double.parse(value) < 0.1){
+                                    return "Min : 0.1";
+                                  } else if (value != "" && double.parse(value) > 15.0){
+                                    return "Max : 15";
+                                  }
+                                },
                                 onSaved: (value) {
                                   _data.snakeWeight = value;
                                 },
@@ -546,7 +762,9 @@ class NewRescueFormState extends State<NewRescueForm> {
                     new ListTile(
                         leading: const Icon(Icons.palette),
                         title: new InputDecorator(
-                            decoration: new InputDecoration(),
+                            decoration: new InputDecoration(
+                              labelText: "Color"
+                            ),
                             child: new DropdownButtonHideUnderline(
                                 child: new DropdownButton<String>(
                                     value: _data.snakeColor,
@@ -647,9 +865,16 @@ class NewRescueFormState extends State<NewRescueForm> {
                     ),
 
                     new ListTile(
-                      leading: new IconButton(
-                          icon: new Icon(Icons.photo_library),
-                          onPressed: getImage),
+                        leading: new IconButton(
+                          icon: new Icon(Icons.photo_library)
+                        ),
+                        title: new FlatButton(
+                          onPressed: getImage,
+                          child: Text(
+                              'Attach Photo',
+                            style: new TextStyle(color: Colors.blue, fontSize: 18.0),
+                          ),
+                        )
                     ),
 
                     _data.images.length > 0

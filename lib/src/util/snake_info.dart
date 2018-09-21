@@ -90,9 +90,9 @@ class SnakeInfo {
     map['snake_micro_habitat'] = microHabitat;
     map['snake_macro_habitat'] = macroHabitat;
     map['snake_condition'] = snakeCondition;
-    map['subcaudals'] = "D:" + dividedSubCaudals + ";" + "U:" + undividedSubCaudals;
+    map['snake_caudals'] = "D:" + dividedSubCaudals + ";" + "U:" + undividedSubCaudals;
     map['release_date'] = null;
-    map['user_id'] = SharedPref.getUserId();
+    map['user_id'] = globals.loggedInUserId;
     return map;
   }
 
@@ -108,7 +108,7 @@ class SnakeInfo {
         formData.rescueDate.day,
         formData.rescueTime.hour, formData.rescueTime.minute
     ).toString();
-    multipartRequest.fields['snake_charm[user_id]'] = '1';
+    multipartRequest.fields['snake_charm[user_id]'] = globals.loggedInUserId.toString();
     multipartRequest.fields['snake_charm[caller_name]'] = formData.callerName;
     multipartRequest.fields['snake_charm[caller_phone]'] =
         formData.callerPhone.toString();
@@ -132,6 +132,9 @@ class SnakeInfo {
     multipartRequest.fields['snake_charm[snake_condition]'] =
         formData.snakeCondition;
     multipartRequest.fields['snake_charm[snake_color]'] = formData.snakeColor;
+    multipartRequest.fields['snake_charm[snake_caudals]'] =
+        "D:" + formData.dividedSubCaudals + ";" + "U:" + formData.undividedSubCaudals;
+
     for (int i=0; i<formData.imagesInfo.length; i++){
       print('snake_charm[snake_photo_'+ i.toString() +']');
       print('snake_photo_' + i.toString());

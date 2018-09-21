@@ -11,6 +11,7 @@ import 'package:date_format/date_format.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'globals.dart' as globals;
 
 
 part 'util/image_info.dart';
@@ -27,13 +28,14 @@ part 'pages/snake_details.dart';
 part 'pages/form_edit_snake.dart';
 part 'pages/list_users.dart';
 part 'pages/form_new_user.dart';
+part 'pages/user_profile.dart';
 
 class DozerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return new MaterialApp(
-      title: 'WildLife NGO',
+      title: 'Kalinga Rescues',
       theme: new ThemeData(
         fontFamily: 'Helvetica Neue',
         primarySwatch: Colors.indigo,
@@ -41,10 +43,10 @@ class DozerApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => new SplashPage(),
-        '/snakeForm': (context) => new NewRescueForm(),
-        '/snakesList': (context) => new ListSnakes(),
-        '/snakeDetail': (context) => new DetailScreen(),
+        '/userSnakesList': (context) => new ListSnakes(listName: "userRecords"),
+        '/adminSnakesList': (context) => new ListSnakes(listName: "adminRecords"),
         '/usersList': (context) => new UsersList(),
+        '/userProfile': (context) => new UserProfile()
       },
     );
   }

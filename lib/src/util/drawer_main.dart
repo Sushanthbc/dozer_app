@@ -28,7 +28,16 @@ class DrawerMain{
             leading: Icon(Icons.list),
             title: Text('My Records'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/snakesList');
+              Navigator.pushReplacementNamed(context, '/userSnakesList');
+              //Navigator.pop(context);
+            },
+          ),
+
+          ListTile(
+            leading: Icon(Icons.view_list),
+            title: Text('All Records'),
+            onTap: () {
+              Navigator.pushReplacementNamed(context, '/adminSnakesList');
               //Navigator.pop(context);
             },
           ),
@@ -37,8 +46,7 @@ class DrawerMain{
             leading: Icon(Icons.person),
             title: Text('My Profile'),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/usersList');
+              Navigator.pushReplacementNamed(context, '/userProfile');
               //
             },
           ),

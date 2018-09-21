@@ -33,7 +33,9 @@ class _SplashPageState extends State<SplashPage> {
             }
           ).then((response){
             var resp = jsonDecode(response.body.toString());
+
             if (resp["user"] == false) {
+
               List<String> displayName = user.displayName.split(" ");
               _newUserInfo = new AppUserInfo();
               _newUserInfo.firstName = displayName[0];
@@ -44,14 +46,20 @@ class _SplashPageState extends State<SplashPage> {
               isNewUser = true;
               setState(() {
               });
+
             } else {
 
-              SharedPref.setUserIdPref(resp["user"]["id"], resp["user"]["admin"]);
-              Navigator.pushReplacementNamed(context, '/snakesList');
+              SharedPref.getUserDetails().then((userDetails) {
+                globals.loggedInUserId = userDetails["userId"];
+                globals.isUserAdmin = userDetails["isAdmin"];
+                Navigator.pushReplacementNamed(context, '/userSnakesList');
+              });
+
             }
 
           }, onError: (err){
             print('error checking first user');
+            print(err);
           });
 
       });
@@ -74,16 +82,18 @@ class _SplashPageState extends State<SplashPage> {
   Widget _checkNewUser(isNewUser) {
     if (!isNewUser) {
       return new Container(
+        margin: EdgeInsets.all(20.0),
         decoration: new BoxDecoration(
+          color: Colors.white,
           image: new DecorationImage(
-              image: new AssetImage("assets/images/KC.jpg"),
-              fit: BoxFit.fitHeight,
-              alignment: Alignment.center),
+              image: new AssetImage("assets/images/KF_Logo.jpg"),
+              fit: BoxFit.fitWidth,
+              alignment: Alignment.center
+              ),
         ),
         child: new Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            new SizedBox(height: 180.0),
             new Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -91,11 +101,7 @@ class _SplashPageState extends State<SplashPage> {
                 new CircularProgressIndicator(),
               ],
             ),
-            new SizedBox(height: 20.0),
-            new Text(
-              "Please wait...",
-              style: new TextStyle(color: Colors.white),
-            ),
+            new SizedBox(height: 40.0)
           ],
         ),
       );

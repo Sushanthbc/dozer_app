@@ -12,12 +12,21 @@ class SharedPref{
 
   static Future<int> getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    globals.loggedInUserId = prefs.getInt('userId');
     return prefs.getInt('userId');
   }
 
   static Future<bool> isUserAdmin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool('isUserAdmin');
+  }
+
+  static Future getUserDetails() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return {
+      "userId" : prefs.getInt('userId'),
+      "isAdmin" : prefs.getBool('isUserAdmin')
+    };
   }
 
 }
