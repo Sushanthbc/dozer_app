@@ -25,7 +25,7 @@ class UsersListView extends StatefulWidget{
 class UsersListViewState extends State<UsersListView>{
 
   Future<List<AppUserInfo>> _getAppUsersList() async {
-    final response = await http.get('https://morning-castle-37512.herokuapp.com/api/users');
+    final response = await http.get(globals.baseURL + 'api/users');
     var responseJson = json.decode(response.body.toString());
     List<AppUserInfo> usersList = _createUserList(responseJson["users"]);
     return usersList;

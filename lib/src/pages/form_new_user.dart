@@ -36,7 +36,7 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save();
       Map _newUserReq = widget.userInfo.toMap();
-      http.post("https://morning-castle-37512.herokuapp.com/api/users",
+      http.post(globals.baseURL +  "api/users",
           body: jsonEncode(_newUserReq),
           headers: {
             "accept": "application/json",

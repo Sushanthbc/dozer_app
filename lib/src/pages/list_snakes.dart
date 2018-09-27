@@ -9,7 +9,7 @@ class ListSnakes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    baseURL = "https://morning-castle-37512.herokuapp.com/api/snake_charms/";
+    baseURL = globals.baseURL + "api/snake_charms/";
     String appTitle;
 
     if (listName == "userRecords") {
@@ -32,7 +32,27 @@ class ListSnakes extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => NewRescueForm(
-                        action: 'create',
+                        snakeInfo: new SnakeInfo(
+                            rescueDate: new DateTime.now(),
+                            rescueTime: new TimeOfDay.now(),
+                            snakeCondition: 'Healthy',
+                            snakeSex: 'male',
+                            snakeBehavior: 'docile',
+                            snakeLength: '',
+                            snakeLengthUnit: 'Feet',
+                            snakeWeight: '',
+                            snakeWeightUnit: 'Kg',
+                            snakeColor: 'Black',
+                            macroHabitat: 'Plantation',
+                            microHabitat: 'Cow Shed',
+                            latitude: '',
+                            longitude: '',
+                            elevation: '',
+                            elevationUnit: 'Feet',
+                            images: [],
+                            imagesInfo: [],
+                            snakePhotos: []
+                        ),
                       ),
                     ),
                   );
@@ -54,11 +74,9 @@ class SnakesListViewState extends State<SnakesListView> {
   int usrId = globals.loggedInUserId;
 
   Future<List<SnakeInfo>> _getSnakesList() async {
-    print('BASE:' + baseURL + usrId.toString());
-    final response = await http.get(baseURL + usrId.toString());
-    print('GET request');
+    print(baseURL +usrId.toString());
+    final response = await http.get(baseURL +usrId.toString());
     print(response.statusCode);
-    print(response.body);
     var responseJson = json.decode(response.body.toString());
     List<SnakeInfo> snakesList = _createSnakesList(responseJson["snake_charm"]);
     return snakesList;
@@ -68,6 +86,7 @@ class SnakesListViewState extends State<SnakesListView> {
     List<SnakeInfo> list = new List();
     for (int i = 0; i < dataFromServer.length; i++) {
       SnakeInfo snakeInfo = new SnakeInfo(
+          id: dataFromServer[i]["id"],
           snakeLength: dataFromServer[i]["snake_length"].toString(),
           snakeLengthUnit: dataFromServer[i]["snake_length_unit"],
           snakeWeight: dataFromServer[i]["snake_weight"].toString(),
@@ -159,22 +178,21 @@ class SnakesListViewState extends State<SnakesListView> {
                                   icon: new Icon(Icons.keyboard_arrow_right),
                                   color: Colors.blue,
                                   onPressed: () {
-                                    print(index);
                                     //Navigator.pushNamed(context, '/snakeDetail');
-                                    /*Navigator.push(
+                                    Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => DetailScreen(snakeInfo: snapshot.data[index]),
+                                          builder: (context) => DetailScreen(recordId : snapshot.data[index].id.toString()),
                                         ),
-                                      );*/
-                                    Navigator.push(
+                                      );
+                                    /*Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => NewRescueForm(
                                             action: snapshot.data[index].id
                                                 .toString()),
                                       ),
-                                    );
+                                    );*/
                                   })
                             ],
                           ),

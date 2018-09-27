@@ -2,9 +2,11 @@ part of dozer;
 
 // Create a Form Widget
 class NewRescueForm extends StatefulWidget {
-  final String action;
+  //final String action;
 
-  NewRescueForm({Key key, @required this.action}) : super(key: key);
+  final SnakeInfo snakeInfo;
+
+  NewRescueForm({Key key, @required this.snakeInfo}) : super(key: key);
 
   @override
   NewRescueFormState createState() {
@@ -15,32 +17,15 @@ class NewRescueForm extends StatefulWidget {
 // Create a corresponding State class. This class will hold the data related to
 // the form.
 class NewRescueFormState extends State<NewRescueForm> {
-  SnakeInfo _data;
+  String httpAction;
 
   @override
   void initState() {
-    if (widget.action == 'create') {
-      _data = new SnakeInfo(
-          rescueDate: new DateTime.now(),
-          rescueTime: new TimeOfDay.now(),
-          snakeCondition: 'Healthy',
-          snakeSex: 'male',
-          snakeBehavior: 'docile',
-          snakeLength: '',
-          snakeLengthUnit: 'Feet',
-          snakeWeight: '',
-          snakeWeightUnit: 'Kg',
-          snakeColor: 'Black',
-          macroHabitat: 'Plantation',
-          microHabitat: 'Cow Shed',
-          latitude: '',
-          longitude: '',
-          elevation: '',
-          elevationUnit: 'Feet',
-          images: [],
-          imagesInfo: []);
+    if (widget.snakeInfo.id == null) {
+      httpAction = "POST";
+    } else {
+      httpAction = "PUT";
     }
-
     super.initState();
   }
 
@@ -63,9 +48,11 @@ class NewRescueFormState extends State<NewRescueForm> {
           builder: (context) => SnakeImageInfo(snakePhoto: image)),
     );
     setState(() {
-      _data.images.add(image);
-      _data.imagesInfo
-          .add({"snake_photo_" + (_data.images.length - 1).toString(): result});
+      List<String> imagePath = image.path.split("/");
+      print(imagePath[imagePath.length - 1]);
+      widget.snakeInfo.images.add(image);
+      widget.snakeInfo.imagesInfo
+          .add({imagePath[imagePath.length - 1]: result});
     });
   }
 
@@ -93,7 +80,10 @@ class NewRescueFormState extends State<NewRescueForm> {
   ];
   List<String> _lengthUnits = <String>['Feet', 'Metres'];
   List<String> _weightUnits = <String>['Kg', 'Lbs'];
-  List<String> _latLngUnits = <String>['Degrees Minutes Seconds', 'Decimal Degrees'];
+  List<String> _latLngUnits = <String>[
+    'Degrees Minutes Seconds',
+    'Decimal Degrees'
+  ];
   List<String> _directions = <String>['North', 'East', 'South', 'West'];
   String _latLngUnit = 'Decimal Degrees';
   String _latDir = "North";
@@ -118,52 +108,100 @@ class NewRescueFormState extends State<NewRescueForm> {
       httpInProgress = true;
 
       // Convert DMS LatLng to DD LatLng
-      if (_dmsLat["degrees"] != null){
-
-      }
+      if (_dmsLat["degrees"] != null) {}
 
       // Check if images present in request
-      if (_data.images.length > 0) {
+      if (widget.snakeInfo.images.length > 0) {
         upload(File imageFile) async {
-          var uri = Uri.parse(
-              "https://morning-castle-37512.herokuapp.com/api/snake_charms");
-          var request = new http.MultipartRequest("POST", uri);
-          request = SnakeInfo.getMultiPartFields(request, _data);
-          for (File image in _data.images) {
-            List<String> imagePath = image.path.split("/");
-            print(imagePath[imagePath.length - 1]);
+          var uri = Uri.parse(globals.baseURL + "api/snake_charms");
+          if (httpAction == "POST") {
+            uri = Uri.parse(
+                globals.baseURL + "api/snake_charms"
+            );
+          } else {
+            uri = Uri.parse(
+                globals.baseURL +
+                "api/snake_charms/" +
+                widget.snakeInfo.id.toString()
+            );
+          }
+          var request = new http.MultipartRequest(httpAction, uri);
+          request.headers["Accept"] = "application/json";
+          request = SnakeInfo.getMultiPartFields(request, widget.snakeInfo);
+          for (File image in widget.snakeInfo.images) {
             var file = await http.MultipartFile.fromPath(
               "snake_charm[snake_photos][]",
               image.path,
             );
             request.files.add(file);
           }
-          /*request.send().then((response) {
+          request.send().then((response) {
             if (response.statusCode == 200) {
-              httpInProgress = false;
-              new SnackBar(content: new Text("New rescue details saved!"));
-              Navigator.pop(context);
+              response.stream.transform(utf8.decoder).listen((value) {
+                httpInProgress = false;
+                var resp = jsonDecode(value.toString());
+                print(resp["snake_charm_details"]["id"]);
+                Scaffold.of(context).showSnackBar(
+                    new SnackBar(content: new Text("Rescue details saved!")));
+              }, onError: (err) {
+                httpInProgress = false;
+                Scaffold.of(context).showSnackBar(new SnackBar(
+                    content: new Text("Server Error. Please try again.")));
+              });
             }
-          });*/
-        };
-        upload(_data.image);
+          }, onError: (err) {
+            httpInProgress = false;
+            Scaffold.of(context).showSnackBar(new SnackBar(
+                content: new Text("Server Error. Please try again.")));
+          });
+        }
+
+        ;
+        upload(widget.snakeInfo.image);
       } else {
-        var req = {"snake_charm": _data.toMap()};
-        print(jsonEncode(req));
-        http
-            .post("https://morning-castle-37512.herokuapp.com/api/snake_charms",
-            headers: {
-              "accept": "application/json",
-              "content-type": "application/json"
-            },
-            body: jsonEncode(req))
-            .then((response) {
-          httpInProgress = false;
-          if (response.statusCode == 200) {
-            new SnackBar(content: new Text("New rescue details saved!"));
-            Navigator.pushReplacementNamed(context, "/userSnakesList");
-          }
-        });
+        var req = {"snake_charm": widget.snakeInfo.toMap()};
+        if (httpAction == "POST") {
+          http
+              .post(globals.baseURL + "api/snake_charms",
+                  headers: {
+                    "accept": "application/json",
+                    "content-type": "application/json"
+                  },
+                  body: jsonEncode(req))
+              .then((response) {
+            httpInProgress = false;
+            if (response.statusCode == 200) {
+              Navigator.pushReplacementNamed(context, "/userSnakesList");
+              Scaffold.of(context).showSnackBar(
+                  new SnackBar(content: new Text("New rescue details saved!")));
+            }
+          }, onError: (err) {
+            Scaffold.of(context).showSnackBar(new SnackBar(
+                content: new Text("Server Error. Please try after sometime.")));
+          });
+        } else {
+          http
+              .put(
+                  globals.baseURL +
+                      "api/snake_charms/" +
+                      widget.snakeInfo.id.toString(),
+                  headers: {
+                    "accept": "application/json",
+                    "content-type": "application/json"
+                  },
+                  body: jsonEncode(req))
+              .then((response) {
+            print(response.statusCode);
+            if (response.statusCode == 200) {
+              Navigator.pop(context);
+              Scaffold.of(context).showSnackBar(
+                  new SnackBar(content: new Text("Rescue details updated!")));
+            }
+          }, onError: (err) {
+            Scaffold.of(context).showSnackBar(new SnackBar(
+                content: new Text("Server error. Please try after sometime.")));
+          });
+        }
       }
     } else {
       // TODO validation message display
@@ -186,7 +224,7 @@ class NewRescueFormState extends State<NewRescueForm> {
 
     if (result == null) return;
     setState(() {
-      _data.rescueDate = result;
+      widget.snakeInfo.rescueDate = result;
     });
   }
 
@@ -199,7 +237,7 @@ class NewRescueFormState extends State<NewRescueForm> {
 
     if (result == null) return;
     setState(() {
-      _data.rescueTime = result;
+      widget.snakeInfo.rescueTime = result;
     });
   }
 
@@ -220,7 +258,7 @@ class NewRescueFormState extends State<NewRescueForm> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           new Text('Rescue Date: ' +
-                              formatDate(_data.rescueDate,
+                              formatDate(widget.snakeInfo.rescueDate,
                                   ['dd', '-', 'mm', '-', 'yyyy'])),
                           new IconButton(
                               icon: Icon(Icons.edit),
@@ -237,7 +275,7 @@ class NewRescueFormState extends State<NewRescueForm> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           new Text(
-                              'Rescue Time: ${_data.rescueTime.format(context)}'),
+                              'Rescue Time: ${widget.snakeInfo.rescueTime.format(context)}'),
                           new IconButton(
                               icon: Icon(Icons.edit),
                               color: Colors.blue,
@@ -250,33 +288,33 @@ class NewRescueFormState extends State<NewRescueForm> {
                     new ListTile(
                         leading: const Icon(Icons.person),
                         title: new TextFormField(
-                          initialValue: _data.callerName,
+                          initialValue: widget.snakeInfo.callerName,
                           decoration:
-                          new InputDecoration(labelText: 'Caller Name'),
+                              new InputDecoration(labelText: 'Caller Name'),
                           onSaved: (value) {
-                            _data.callerName = value;
+                            widget.snakeInfo.callerName = value;
                           },
                         )),
 
                     new ListTile(
                         leading: const Icon(Icons.phone),
                         title: new TextFormField(
-                          initialValue: _data.callerPhone,
+                          initialValue: widget.snakeInfo.callerPhone,
                           keyboardType: TextInputType.phone,
                           decoration:
-                          new InputDecoration(labelText: "Caller Phone"),
+                              new InputDecoration(labelText: "Caller Phone"),
                           onSaved: (value) {
-                            _data.callerPhone = value;
+                            widget.snakeInfo.callerPhone = value;
                           },
                         )),
 
                     new ListTile(
                       leading: const Icon(Icons.location_on),
                       title: new TextFormField(
-                        initialValue: _data.address,
+                        initialValue: widget.snakeInfo.address,
                         decoration: InputDecoration(labelText: 'Address'),
                         onSaved: (value) {
-                          _data.address = value;
+                          widget.snakeInfo.address = value;
                         },
                       ),
                     ),
@@ -284,11 +322,11 @@ class NewRescueFormState extends State<NewRescueForm> {
                     new ListTile(
                       leading: const Icon(Icons.local_post_office),
                       title: new TextFormField(
-                        initialValue: _data.pincode,
+                        initialValue: widget.snakeInfo.pincode,
                         decoration: InputDecoration(labelText: 'Pincode'),
                         keyboardType: TextInputType.number,
                         onSaved: (value) {
-                          _data.pincode = value;
+                          widget.snakeInfo.pincode = value;
                         },
                       ),
                     ),
@@ -296,10 +334,10 @@ class NewRescueFormState extends State<NewRescueForm> {
                     new ListTile(
                       leading: const Icon(Icons.location_city),
                       title: new TextFormField(
-                        initialValue: _data.village,
+                        initialValue: widget.snakeInfo.village,
                         decoration: InputDecoration(labelText: 'Village/Town'),
                         onSaved: (value) {
-                          _data.village = value;
+                          widget.snakeInfo.village = value;
                         },
                       ),
                     ),
@@ -307,8 +345,8 @@ class NewRescueFormState extends State<NewRescueForm> {
                     new ListTile(
                       leading: const Icon(Icons.location_on),
                       title: new InputDecorator(
-                        decoration:
-                        new InputDecoration(labelText: "Latitude Longitude Units"),
+                        decoration: new InputDecoration(
+                            labelText: "Latitude Longitude Units"),
                         child: new DropdownButtonHideUnderline(
                             child: new DropdownButton<String>(
                                 value: _latLngUnit,
@@ -328,192 +366,181 @@ class NewRescueFormState extends State<NewRescueForm> {
                     ),
 
                     _latLngUnit == 'Degrees Minutes Seconds'
-                    ? new Column(
-                      children: <Widget>[
-
-                        new ListTile(
-                          leading: new Padding(padding: EdgeInsets.only(left:24.0)),
-                          title: new Container(
-                              margin: EdgeInsets.only(top:20.0),
-                              child: new Text(
-                                  'Latitude',
-                                style: new TextStyle(
-                                  fontWeight: FontWeight.bold
-                                ),
+                        ? new Column(
+                            children: <Widget>[
+                              new ListTile(
+                                  leading: new Padding(
+                                      padding: EdgeInsets.only(left: 24.0)),
+                                  title: new Container(
+                                      margin: EdgeInsets.only(top: 20.0),
+                                      child: new Text(
+                                        'Latitude',
+                                        style: new TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ))),
+                              new Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  new Padding(
+                                    padding: EdgeInsets.only(left: 5.0),
+                                  ),
+                                  new Container(
+                                    width: 80.0,
+                                    child: new TextFormField(
+                                      keyboardType:
+                                          new TextInputType.numberWithOptions(
+                                              decimal: false),
+                                      decoration:
+                                          InputDecoration(labelText: 'Degrees'),
+                                      onSaved: (value) {
+                                        _dmsLat["degrees"] = value;
+                                      },
+                                    ),
+                                  ),
+                                  new Container(
+                                    width: 80.0,
+                                    child: new TextFormField(
+                                      keyboardType:
+                                          new TextInputType.numberWithOptions(
+                                              decimal: false),
+                                      decoration:
+                                          InputDecoration(labelText: 'Minutes'),
+                                      onSaved: (value) {
+                                        _dmsLat["minutes"] = value;
+                                      },
+                                    ),
+                                  ),
+                                  new Container(
+                                    width: 80.0,
+                                    child: new TextFormField(
+                                      keyboardType:
+                                          new TextInputType.numberWithOptions(
+                                              decimal: true),
+                                      decoration:
+                                          InputDecoration(labelText: 'Seconds'),
+                                      onSaved: (value) {
+                                        _dmsLat["seconds"] = value;
+                                      },
+                                    ),
+                                  ),
+                                  new Container(
+                                    margin: EdgeInsets.only(right: 20.0),
+                                    width: 80.0,
+                                    child: new TextFormField(
+                                      keyboardType:
+                                          new TextInputType.numberWithOptions(
+                                              decimal: true),
+                                      decoration: InputDecoration(
+                                          labelText: 'Direction'),
+                                      onSaved: (value) {
+                                        _dmsLat["seconds"] = value;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              new ListTile(
+                                  leading: new Padding(
+                                      padding: EdgeInsets.only(left: 24.0)),
+                                  title: new Container(
+                                      margin: EdgeInsets.only(top: 20.0),
+                                      child: new Text('Longitude',
+                                          style: new TextStyle(
+                                              fontWeight: FontWeight.bold)))),
+                              new Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  new Padding(
+                                    padding: EdgeInsets.only(left: 24.0),
+                                  ),
+                                  new Container(
+                                    width: 80.0,
+                                    child: new TextFormField(
+                                      keyboardType:
+                                          new TextInputType.numberWithOptions(
+                                              decimal: true),
+                                      decoration:
+                                          InputDecoration(labelText: 'Degrees'),
+                                      onSaved: (value) {
+                                        _dmsLng["degrees"] = value;
+                                      },
+                                    ),
+                                  ),
+                                  new Container(
+                                    width: 80.0,
+                                    child: new TextFormField(
+                                      keyboardType:
+                                          new TextInputType.numberWithOptions(
+                                              decimal: true),
+                                      decoration:
+                                          InputDecoration(labelText: 'Minutes'),
+                                      onSaved: (value) {
+                                        _dmsLng["minutes"] = value;
+                                      },
+                                    ),
+                                  ),
+                                  new Container(
+                                    width: 80.0,
+                                    child: new TextFormField(
+                                      keyboardType:
+                                          new TextInputType.numberWithOptions(
+                                              decimal: true),
+                                      decoration:
+                                          InputDecoration(labelText: 'Seconds'),
+                                      onSaved: (value) {
+                                        _dmsLng["seconds"] = value;
+                                      },
+                                    ),
+                                  ),
+                                ],
                               )
+                            ],
                           )
-                        ),
-
-                        new Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            new Padding(
-                              padding: EdgeInsets.only(left: 5.0),
-                            ),
-                            new Container(
-                              width: 80.0,
-                              child: new TextFormField(
-                                keyboardType:
-                                new TextInputType.numberWithOptions(
-                                    decimal: false),
-                                decoration:
-                                InputDecoration(labelText: 'Degrees'),
-                                onSaved: (value) {
-                                  _dmsLat["degrees"] = value;
-                                },
-                              ),
-                            ),
-
-                            new Container(
-                              width: 80.0,
-                              child: new TextFormField(
-                                keyboardType:
-                                new TextInputType.numberWithOptions(
-                                    decimal: false),
-                                decoration:
-                                InputDecoration(labelText: 'Minutes'),
-                                onSaved: (value) {
-                                  _dmsLat["minutes"] = value;
-                                },
-                              ),
-                            ),
-
-                            new Container(
-                              width: 80.0,
-                              child: new TextFormField(
-                                keyboardType:
-                                new TextInputType.numberWithOptions(
-                                    decimal: true),
-                                decoration:
-                                InputDecoration(labelText: 'Seconds'),
-                                onSaved: (value) {
-                                  _dmsLat["seconds"] = value;
-                                },
-                              ),
-                            ),
-
-                            new Container(
-                              margin: EdgeInsets.only(right:20.0),
-                              width: 80.0,
-                              child: new TextFormField(
-                                keyboardType:
-                                new TextInputType.numberWithOptions(
-                                    decimal: true),
-                                decoration:
-                                InputDecoration(labelText: 'Direction'),
-                                onSaved: (value) {
-                                  _dmsLat["seconds"] = value;
-                                },
-                              ),
-                            ),
-
-                          ],
-                        ),
-
-                        new ListTile(
-                            leading: new Padding(padding: EdgeInsets.only(left:24.0)),
-                            title: new Container(
-                              margin: EdgeInsets.only(top:20.0),
-                              child: new Text(
-                                  'Longitude',
-                                style: new TextStyle(
-                                    fontWeight: FontWeight.bold
+                        : new ListTile(
+                            leading: new Padding(
+                                padding: EdgeInsets.only(left: 24.0)),
+                            title: new Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                new Container(
+                                  width: 120.0,
+                                  child: new TextFormField(
+                                    initialValue:
+                                        widget.snakeInfo.latitude.toString(),
+                                    keyboardType:
+                                        new TextInputType.numberWithOptions(
+                                            decimal: true),
+                                    decoration:
+                                        InputDecoration(labelText: 'Latitude'),
+                                    onSaved: (value) {
+                                      widget.snakeInfo.latitude = value;
+                                    },
+                                  ),
+                                ),
+                                new Container(
+                                  width: 120.0,
+                                  child: new TextFormField(
+                                    initialValue:
+                                        widget.snakeInfo.longitude.toString(),
+                                    keyboardType:
+                                        new TextInputType.numberWithOptions(
+                                            decimal: true),
+                                    decoration:
+                                        InputDecoration(labelText: 'Longitude'),
+                                    onSaved: (value) {
+                                      widget.snakeInfo.longitude = value;
+                                    },
+                                  ),
                                 )
-                              )
-                            )
-                        ),
-
-                        new Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            new Padding(
-                              padding: EdgeInsets.only(left: 24.0),
-                            ),
-                            new Container(
-                              width: 80.0,
-                              child: new TextFormField(
-                                keyboardType:
-                                new TextInputType.numberWithOptions(
-                                    decimal: true),
-                                decoration:
-                                InputDecoration(labelText: 'Degrees'),
-                                onSaved: (value) {
-                                  _dmsLng["degrees"] = value;
-                                },
-                              ),
-                            ),
-                            new Container(
-                              width: 80.0,
-                              child: new TextFormField(
-                                keyboardType:
-                                new TextInputType.numberWithOptions(
-                                    decimal: true),
-                                decoration:
-                                InputDecoration(labelText: 'Minutes'),
-                                onSaved: (value) {
-                                  _dmsLng["minutes"] = value;
-                                },
-                              ),
-                            ),
-                            new Container(
-                              width: 80.0,
-                              child: new TextFormField(
-                                keyboardType:
-                                new TextInputType.numberWithOptions(
-                                    decimal: true),
-                                decoration:
-                                InputDecoration(labelText: 'Seconds'),
-                                onSaved: (value) {
-                                  _dmsLng["seconds"] = value;
-                                },
-                              ),
-                            ),
-                          ],
-                        )
-
-                      ],
-                    )
-
-                    : new ListTile(
-                        leading: new Padding(padding: EdgeInsets.only(left:24.0)),
-                        title: new Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            new Container(
-                              width: 120.0,
-                              child: new TextFormField(
-                                initialValue: _data.latitude.toString(),
-                                keyboardType:
-                                new TextInputType.numberWithOptions(
-                                    decimal: true),
-                                decoration:
-                                InputDecoration(labelText: 'Latitude'),
-                                onSaved: (value) {
-                                  _data.latitude = value;
-                                },
-                              ),
-                            ),
-                            new Container(
-                              width: 120.0,
-                              child: new TextFormField(
-                                initialValue: _data.longitude.toString(),
-                                keyboardType:
-                                new TextInputType.numberWithOptions(
-                                    decimal: true),
-                                decoration:
-                                InputDecoration(labelText: 'Longitude'),
-                                onSaved: (value) {
-                                  _data.longitude = value;
-                                },
-                              ),
-                            )
-                          ],
-                        )),
+                              ],
+                            )),
 
                     new ListTile(
                         leading: const Icon(Icons.landscape),
@@ -524,14 +551,15 @@ class NewRescueFormState extends State<NewRescueForm> {
                             new Container(
                               width: 120.0,
                               child: new TextFormField(
-                                initialValue: _data.elevation.toString(),
+                                initialValue:
+                                    widget.snakeInfo.elevation.toString(),
                                 keyboardType:
-                                new TextInputType.numberWithOptions(
-                                    decimal: true),
+                                    new TextInputType.numberWithOptions(
+                                        decimal: true),
                                 decoration:
-                                InputDecoration(labelText: 'Elevation'),
+                                    InputDecoration(labelText: 'Elevation'),
                                 onSaved: (value) {
-                                  _data.elevation = value;
+                                  widget.snakeInfo.elevation = value;
                                 },
                               ),
                             ),
@@ -539,14 +567,15 @@ class NewRescueFormState extends State<NewRescueForm> {
                               width: 120.0,
                               child: new InputDecorator(
                                 decoration:
-                                new InputDecoration(labelText: "Unit"),
+                                    new InputDecoration(labelText: "Unit"),
                                 child: new DropdownButtonHideUnderline(
                                     child: new DropdownButton<String>(
-                                        value: _data.elevationUnit,
+                                        value: widget.snakeInfo.elevationUnit,
                                         isDense: true,
                                         onChanged: (String newValue) {
                                           setState(() {
-                                            _data.elevationUnit = newValue;
+                                            widget.snakeInfo.elevationUnit =
+                                                newValue;
                                           });
                                         },
                                         items: _lengthUnits.map((String value) {
@@ -564,14 +593,15 @@ class NewRescueFormState extends State<NewRescueForm> {
                         leading: const Icon(Icons.public),
                         title: new InputDecorator(
                             decoration:
-                            new InputDecoration(labelText: "Macrohabitat"),
+                                new InputDecoration(labelText: "Macrohabitat"),
                             child: new DropdownButtonHideUnderline(
                                 child: new DropdownButton<String>(
-                                    value: _data.macroHabitat,
+                                    value: widget.snakeInfo.macroHabitat,
                                     isDense: true,
                                     onChanged: (String newValue) {
                                       setState(() {
-                                        _data.macroHabitat = newValue;
+                                        widget.snakeInfo.macroHabitat =
+                                            newValue;
                                       });
                                     },
                                     items: _macroHabitats.map((String value) {
@@ -585,14 +615,15 @@ class NewRescueFormState extends State<NewRescueForm> {
                         leading: const Icon(Icons.home),
                         title: new InputDecorator(
                             decoration:
-                            new InputDecoration(labelText: "Microhabitat"),
+                                new InputDecoration(labelText: "Microhabitat"),
                             child: new DropdownButtonHideUnderline(
                                 child: new DropdownButton<String>(
-                                    value: _data.microHabitat,
+                                    value: widget.snakeInfo.microHabitat,
                                     isDense: true,
                                     onChanged: (String newValue) {
                                       setState(() {
-                                        _data.microHabitat = newValue;
+                                        widget.snakeInfo.microHabitat =
+                                            newValue;
                                       });
                                     },
                                     items: _microHabitats.map((String value) {
@@ -606,14 +637,15 @@ class NewRescueFormState extends State<NewRescueForm> {
                         leading: const Icon(Icons.local_hospital),
                         title: new InputDecorator(
                           decoration:
-                          new InputDecoration(labelText: "Condition"),
+                              new InputDecoration(labelText: "Condition"),
                           child: new DropdownButtonHideUnderline(
                               child: new DropdownButton<String>(
-                                  value: _data.snakeCondition,
+                                  value: widget.snakeInfo.snakeCondition,
                                   isDense: true,
                                   onChanged: (String newValue) {
                                     setState(() {
-                                      _data.snakeCondition = newValue;
+                                      widget.snakeInfo.snakeCondition =
+                                          newValue;
                                     });
                                   },
                                   items: _conditions.map((String value) {
@@ -633,20 +665,23 @@ class NewRescueFormState extends State<NewRescueForm> {
                             new Container(
                               width: 75.0,
                               child: new TextFormField(
-                                initialValue: _data.snakeLength.toString(),
+                                initialValue:
+                                    widget.snakeInfo.snakeLength.toString(),
                                 decoration: InputDecoration(
                                   labelText: 'Length',
                                 ),
                                 keyboardType: TextInputType.number,
-                                validator: (value){
-                                  if (value != "" && double.parse(value) < 1.0){
+                                validator: (value) {
+                                  if (value != "" &&
+                                      double.parse(value) < 1.0) {
                                     return "Min : 1";
-                                  } else if (value != "" && double.parse(value) > 20.0){
+                                  } else if (value != "" &&
+                                      double.parse(value) > 20.0) {
                                     return "Max : 15";
                                   }
                                 },
                                 onSaved: (value) {
-                                  _data.snakeLength = value;
+                                  widget.snakeInfo.snakeLength = value;
                                 },
                               ),
                             ),
@@ -654,14 +689,15 @@ class NewRescueFormState extends State<NewRescueForm> {
                               width: 90.0,
                               child: new InputDecorator(
                                 decoration:
-                                new InputDecoration(labelText: "Unit"),
+                                    new InputDecoration(labelText: "Unit"),
                                 child: new DropdownButtonHideUnderline(
                                     child: new DropdownButton<String>(
-                                        value: _data.snakeLengthUnit,
+                                        value: widget.snakeInfo.snakeLengthUnit,
                                         isDense: true,
                                         onChanged: (String newValue) {
                                           setState(() {
-                                            _data.snakeLengthUnit = newValue;
+                                            widget.snakeInfo.snakeLengthUnit =
+                                                newValue;
                                           });
                                         },
                                         items: _lengthUnits.map((String value) {
@@ -685,21 +721,24 @@ class NewRescueFormState extends State<NewRescueForm> {
                               width: 75.0,
                               margin: const EdgeInsets.only(right: 40.0),
                               child: new TextFormField(
-                                initialValue: _data.snakeWeight.toString(),
+                                initialValue:
+                                    widget.snakeInfo.snakeWeight.toString(),
                                 decoration: InputDecoration(
                                   labelText: 'Weight',
                                 ),
                                 keyboardType: TextInputType.numberWithOptions(
                                     decimal: true),
-                                validator: (value){
-                                  if (value != "" && double.parse(value) < 0.1){
+                                validator: (value) {
+                                  if (value != "" &&
+                                      double.parse(value) < 0.1) {
                                     return "Min : 0.1";
-                                  } else if (value != "" && double.parse(value) > 15.0){
+                                  } else if (value != "" &&
+                                      double.parse(value) > 15.0) {
                                     return "Max : 15";
                                   }
                                 },
                                 onSaved: (value) {
-                                  _data.snakeWeight = value;
+                                  widget.snakeInfo.snakeWeight = value;
                                 },
                               ),
                             ),
@@ -707,14 +746,15 @@ class NewRescueFormState extends State<NewRescueForm> {
                                 width: 90.0,
                                 child: new InputDecorator(
                                   decoration:
-                                  new InputDecoration(labelText: "Unit"),
+                                      new InputDecoration(labelText: "Unit"),
                                   child: new DropdownButtonHideUnderline(
                                     child: new DropdownButton<String>(
-                                        value: _data.snakeWeightUnit,
+                                        value: widget.snakeInfo.snakeWeightUnit,
                                         isDense: true,
                                         onChanged: (String newValue) {
                                           setState(() {
-                                            _data.snakeWeightUnit = newValue;
+                                            widget.snakeInfo.snakeWeightUnit =
+                                                newValue;
                                           });
                                         },
                                         items: _weightUnits.map((String value) {
@@ -734,44 +774,44 @@ class NewRescueFormState extends State<NewRescueForm> {
 
                     new ListTile(
                         leading:
-                        new Padding(padding: EdgeInsets.only(right: 20.0)),
+                            new Padding(padding: EdgeInsets.only(right: 20.0)),
                         title: new TextFormField(
+                          initialValue: widget.snakeInfo.dividedSubCaudals,
                           keyboardType: TextInputType.number,
                           decoration: new InputDecoration(
                               labelText: "Divided",
                               hintText: "eg : 1-5,8-12,19-25"),
-                          onSaved: (val){
-                            _data.dividedSubCaudals  = val;
+                          onSaved: (val) {
+                            widget.snakeInfo.dividedSubCaudals = val;
                           },
                         )),
 
                     new ListTile(
                         leading:
-                        new Padding(padding: EdgeInsets.only(right: 20.0)),
+                            new Padding(padding: EdgeInsets.only(right: 20.0)),
                         title: new TextFormField(
+                          initialValue: widget.snakeInfo.undividedSubCaudals,
                           keyboardType: TextInputType.number,
                           decoration: new InputDecoration(
                             labelText: "Undivided",
                             hintText: "eg: 4-7,13-18,26-31",
                           ),
-                          onSaved: (val){
-                            _data.undividedSubCaudals = val;
+                          onSaved: (val) {
+                            widget.snakeInfo.undividedSubCaudals = val;
                           },
                         )),
 
                     new ListTile(
                         leading: const Icon(Icons.palette),
                         title: new InputDecorator(
-                            decoration: new InputDecoration(
-                              labelText: "Color"
-                            ),
+                            decoration: new InputDecoration(labelText: "Color"),
                             child: new DropdownButtonHideUnderline(
                                 child: new DropdownButton<String>(
-                                    value: _data.snakeColor,
+                                    value: widget.snakeInfo.snakeColor,
                                     isDense: true,
                                     onChanged: (String newValue) {
                                       setState(() {
-                                        _data.snakeColor = newValue;
+                                        widget.snakeInfo.snakeColor = newValue;
                                       });
                                     },
                                     items: _kcColors.map((String value) {
@@ -790,11 +830,11 @@ class NewRescueFormState extends State<NewRescueForm> {
                           children: <Widget>[
                             new Radio<String>(
                               value: 'male',
-                              groupValue: _data.snakeSex,
+                              groupValue: widget.snakeInfo.snakeSex,
                               activeColor: Colors.blue,
                               onChanged: (value) {
                                 setState(() {
-                                  _data.snakeSex = value;
+                                  widget.snakeInfo.snakeSex = value;
                                 });
                               },
                             ),
@@ -802,10 +842,10 @@ class NewRescueFormState extends State<NewRescueForm> {
                             new Container(width: 50.0, height: 80.0),
                             new Radio<String>(
                               value: 'female',
-                              groupValue: _data.snakeSex,
+                              groupValue: widget.snakeInfo.snakeSex,
                               onChanged: (value) {
                                 setState(() {
-                                  _data.snakeSex = value;
+                                  widget.snakeInfo.snakeSex = value;
                                 });
                               },
                             ),
@@ -822,11 +862,11 @@ class NewRescueFormState extends State<NewRescueForm> {
                           children: <Widget>[
                             new Radio<String>(
                               value: 'docile',
-                              groupValue: _data.snakeBehavior,
+                              groupValue: widget.snakeInfo.snakeBehavior,
                               activeColor: Colors.blue,
                               onChanged: (value) {
                                 setState(() {
-                                  _data.snakeBehavior = value;
+                                  widget.snakeInfo.snakeBehavior = value;
                                 });
                               },
                             ),
@@ -836,10 +876,10 @@ class NewRescueFormState extends State<NewRescueForm> {
                             ),
                             new Radio<String>(
                               value: 'defensive',
-                              groupValue: _data.snakeBehavior,
+                              groupValue: widget.snakeInfo.snakeBehavior,
                               onChanged: (value) {
                                 setState(() {
-                                  _data.snakeBehavior = value;
+                                  widget.snakeInfo.snakeBehavior = value;
                                 });
                               },
                             ),
@@ -851,7 +891,7 @@ class NewRescueFormState extends State<NewRescueForm> {
                       padding: EdgeInsets.only(left: 20.0, right: 20.0),
                       child: new TextFormField(
                         decoration:
-                        new InputDecoration(labelText: 'General Remarks'),
+                            new InputDecoration(labelText: 'General Remarks'),
                       ),
                     ),
 
@@ -860,37 +900,66 @@ class NewRescueFormState extends State<NewRescueForm> {
                           left: 20.0, right: 20.0, top: 10.0, bottom: 20.0),
                       child: new TextFormField(
                         decoration:
-                        new InputDecoration(labelText: 'Bite Report'),
+                            new InputDecoration(labelText: 'Bite Report'),
                       ),
                     ),
 
+                    widget.snakeInfo.snakePhotos.length > 0
+                        ? new GridView.count(
+                            shrinkWrap: true,
+                            crossAxisCount: 3,
+                            children: List.generate(
+                                snakeInfo.snakePhotos.length, (index) {
+                              return Center(
+                                  child: new Column(
+                                children: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => KcImageViewer(
+                                                imageURL: snakeInfo
+                                                    .snakePhotos[index],
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    child: new Image.network(
+                                      snakeInfo.snakePhotos[index],
+                                    ),
+                                  ),
+                                ],
+                              ));
+                            }))
+                        : new Container(),
+
                     new ListTile(
-                        leading: new IconButton(
-                          icon: new Icon(Icons.photo_library)
-                        ),
+                        leading: null,
                         title: new FlatButton(
                           onPressed: getImage,
                           child: Text(
-                              'Attach Photo',
-                            style: new TextStyle(color: Colors.blue, fontSize: 18.0),
+                            'Attach Photo',
+                            style: new TextStyle(
+                                color: Colors.blue, fontSize: 18.0),
                           ),
-                        )
-                    ),
+                        )),
 
-                    _data.images.length > 0
+                    widget.snakeInfo.images.length > 0
                         ? new GridView.count(
-                        shrinkWrap: true,
-                        crossAxisCount: 3,
-                        children:
-                        List.generate(_data.images.length, (index) {
-                          return Center(
-                              child: new Column(
+                            shrinkWrap: true,
+                            crossAxisCount: 3,
+                            children: List.generate(
+                                widget.snakeInfo.images.length, (index) {
+                              return Center(
+                                  child: new Column(
                                 children: <Widget>[
-                                  new Image.file(_data.images[index]),
-                                  //new Text(_data.imagesInfo[index]['image'])
+                                  new Image.file(
+                                      widget.snakeInfo.images[index]),
+                                  //new Text(widget.snakeInfo.imagesInfo[index]['image'])
                                 ],
                               ));
-                        }))
+                            }))
                         : new Container(),
 
                     // Form Submit button

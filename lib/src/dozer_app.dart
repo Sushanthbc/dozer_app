@@ -29,6 +29,7 @@ part 'pages/form_edit_snake.dart';
 part 'pages/list_users.dart';
 part 'pages/form_new_user.dart';
 part 'pages/user_profile.dart';
+part 'pages/image_viewer.dart';
 
 class DozerApp extends StatelessWidget {
   @override

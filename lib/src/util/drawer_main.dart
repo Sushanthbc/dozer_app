@@ -12,15 +12,17 @@ class DrawerMain{
           DrawerHeader(
 
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Colors.white,
             ),
 
-            child: Text(
-              'Kalinga Foundation',
-              style: new TextStyle(
-                  color: Colors.white
-              ),
-            ),
+            child: Image.asset("assets/images/KF_Logo.jpg"),
+
+//            child: Text(
+//              'Menu',
+//              style: new TextStyle(
+//                  color: Colors.white
+//              ),
+//            ),
 
           ),
 

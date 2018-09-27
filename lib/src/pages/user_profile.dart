@@ -39,7 +39,7 @@ class UserProfileFormState extends State<UserProfileForm> {
 
   Future<AppUserInfo> _getUserProfile() async {
     final response =
-    await http.get('https://morning-castle-37512.herokuapp.com/api/users/' + globals.loggedInUserId.toString());
+    await http.get(globals.baseURL + 'api/users/' + globals.loggedInUserId.toString());
 
     if (response.statusCode == 200) {
       // If server returns an OK response, parse the JSON
@@ -63,7 +63,7 @@ class UserProfileFormState extends State<UserProfileForm> {
       _formKey.currentState.save();
       Map _newUserReq = _userInfo.toMap();
       print(jsonEncode(_newUserReq));
-      http.patch("https://morning-castle-37512.herokuapp.com/api/users/" + globals.loggedInUserId.toString(),
+      http.patch(globals.baseURL + "api/users/" + globals.loggedInUserId.toString(),
           body: jsonEncode(_newUserReq),
           headers: {
             "accept": "application/json",

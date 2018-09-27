@@ -31,6 +31,7 @@ class SnakeInfo {
   String microHabitat;
 
   List<File> images;
+  List snakePhotos;
   List<Map> imagesInfo;
   File image;
 
@@ -63,7 +64,8 @@ class SnakeInfo {
     this.elevationUnit,
     this.image,
     this.images,
-    this.imagesInfo
+    this.imagesInfo,
+    this.snakePhotos
   });
 
   Map<String, dynamic> toMap() {
@@ -98,8 +100,48 @@ class SnakeInfo {
 
   SnakeInfo.fromMap(Map<String, dynamic> map) {
     this.id = map['id'];
+    this.rescueDateTime= map["rescue_date_time"];
+    this.rescueDate = DateTime.parse(map["rescue_date_time"]);
+    this.rescueTime = TimeOfDay.fromDateTime(DateTime.parse(map["rescue_date_time"]));
     this.callerName = map['caller_name'];
     this.callerPhone = map['caller_phone'];
+    this.snakeLength = map["snake_length"].toString();
+    this.snakeLengthUnit= map["snake_length_unit"];
+    this.snakeWeight= map["snake_weight"].toString();
+    this.snakeWeightUnit= map["snake_weight_unit"];
+    this.snakeColor= map["snake_color"];
+    this.snakeSex= map["snake_sex"];
+    //this.dividedSubCaudals= map["snake_caudals"]["divided"];
+    //this.undividedSubCaudals= map["snake_caudals"]["undivided"];
+
+    if (map["snake_caudals"]!="D:;U:"){
+      List<String> _caudals = map["snake_caudals"].toString().split(";");
+      String _dividedCaudals = _caudals[0].split(":")[1];
+      String _undividedCaudals = _caudals[1].split(":")[1];
+      this.dividedSubCaudals = _dividedCaudals;
+      this.undividedSubCaudals = _undividedCaudals;
+    } else {
+      this.dividedSubCaudals = "";
+      this.undividedSubCaudals = "";
+    }
+
+    this.snakeCondition= map["snake_condition"];
+    this.snakeBehavior = map["snake_behavior"];
+    this.callerName= map["caller_name"];
+    this.callerPhone= map["caller_phone"].toString();
+    this.address= map["address"];
+    this.village= map["village"];
+    this.pincode= map["pincode"];
+    this.macroHabitat= map["snake_macro_habitat"];
+    this.microHabitat= map["snake_micro_habitat"];
+    this.images = [];
+    
+    // Photo links
+    if (map["snake_photos"].length > 0) {
+      this.snakePhotos = map["snake_photos"];
+    } else {
+      this.snakePhotos = [];
+    }
   }
 
   static http.MultipartRequest getMultiPartFields(multipartRequest, SnakeInfo formData) {

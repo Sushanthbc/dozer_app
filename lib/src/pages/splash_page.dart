@@ -25,7 +25,7 @@ class _SplashPageState extends State<SplashPage> {
             }
           };
           http.post(
-            "https://morning-castle-37512.herokuapp.com/api/users/account_check",
+            globals.baseURL + "api/users/account_check",
             body: jsonEncode(checkUserReq),
             headers: {
               "accept": "application/json",
