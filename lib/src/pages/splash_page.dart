@@ -48,18 +48,24 @@ class _SplashPageState extends State<SplashPage> {
               });
 
             } else {
-
               SharedPref.getUserDetails().then((userDetails) {
-                globals.loggedInUserId = userDetails["userId"];
-                globals.isUserAdmin = userDetails["isAdmin"];
+                if (userDetails["userId"] == null) {
+                  SharedPref.setUserIdPref(resp["user"]["id"], resp["user"]["admin"]);
+                  globals.loggedInUserId = resp["user"]["id"];
+                  globals.isUserAdmin = resp["user"]["admin"];
+                } else {
+                  globals.loggedInUserId = userDetails["userId"];
+                  globals.isUserAdmin = userDetails["isAdmin"];
+                }
                 Navigator.pushReplacementNamed(context, '/userSnakesList');
               });
 
             }
 
           }, onError: (err){
-            print('error checking first user');
-            print(err);
+            Scaffold.of(context).showSnackBar(
+              SnackBar(content: Text("Server error! Please try after sometime."))
+            );
           });
 
       });
@@ -82,28 +88,54 @@ class _SplashPageState extends State<SplashPage> {
   Widget _checkNewUser(isNewUser) {
     if (!isNewUser) {
       return new Container(
-        margin: EdgeInsets.all(20.0),
-        decoration: new BoxDecoration(
-          color: Colors.white,
-          image: new DecorationImage(
-              image: new AssetImage("assets/images/KF_Logo.jpg"),
-              fit: BoxFit.fitWidth,
-              alignment: Alignment.center
-              ),
-        ),
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                new CircularProgressIndicator(),
-              ],
+          constraints: new BoxConstraints.expand(
+            height: double.infinity,
+          ),
+          padding: new EdgeInsets.only(left: 16.0, bottom: 8.0, right: 16.0),
+          decoration: new BoxDecoration(
+            image: new DecorationImage(
+              image: new AssetImage('assets/images/splash_kc.jpg'),
+              fit: BoxFit.cover,
             ),
-            new SizedBox(height: 40.0)
-          ],
-        ),
+          ),
+          child: new Stack(
+            children: <Widget>[
+              new Align(
+                alignment: Alignment.topCenter,
+                child: new Padding(
+                  padding: EdgeInsets.only(top:30.0),
+                  child: new Text('Kaalinga',
+                    style: new TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30.0,
+                        color: Colors.white
+                    ),
+                  )
+                ),
+              ),
+              new Positioned(
+                left: 170.0,
+                top: 80.0,
+                child: new Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    new CircularProgressIndicator(),
+                  ],
+                ),
+              ),
+              new Positioned(
+                right: 10.0,
+                bottom: 50.0,
+                child: new Image.asset(
+                  "assets/images/KF_Logo.jpg",
+                  fit: BoxFit.contain,
+                  height: 100.0,
+                ),
+              ),
+            ],
+          )
       );
     } else {
       return UserRegistrationForm(userInfo: _newUserInfo);
