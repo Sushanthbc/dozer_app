@@ -30,6 +30,9 @@ class SnakeInfo {
   String macroHabitat;
   String microHabitat;
 
+  String generalRemarks;
+  String biteReport;
+
   List<File> images;
   List snakePhotos;
   List<Map> imagesInfo;
@@ -65,7 +68,9 @@ class SnakeInfo {
     this.image,
     this.images,
     this.imagesInfo,
-    this.snakePhotos
+    this.snakePhotos,
+    this.generalRemarks,
+    this.biteReport
   });
 
   Map<String, dynamic> toMap() {
@@ -84,7 +89,9 @@ class SnakeInfo {
     map['caller_phone'] = callerPhone;
     map['snake_length'] = double.parse(snakeLength);
     map['snake_length_unit'] = snakeLengthUnit;
-    map['snake_weight'] = double.parse(snakeWeight);
+    if (snakeWeight !=  null && snakeWeight !=  "") {
+      map['snake_weight'] = double.parse(snakeWeight);
+    }
     map['snake_weight_unit'] = snakeWeightUnit;
     map['snake_sex'] = snakeSex;
     map['snake_color'] = snakeColor;
@@ -95,6 +102,22 @@ class SnakeInfo {
     map['snake_caudals'] = "D:" + dividedSubCaudals + ";" + "U:" + undividedSubCaudals;
     map['release_date'] = null;
     map['user_id'] = globals.loggedInUserId;
+    if (latitude != null){
+      map['latitude'] = latitude;
+    }
+    if (longitude != null){
+      map['longitude'] = longitude;
+    }
+    if (elevation != null){
+      map['elevation'] = elevation;
+      map['elevation_unit'] = elevationUnit;
+    }
+    if (generalRemarks != null){
+      map['general_remarks'] = generalRemarks;
+    }
+    if (biteReport != null){
+      map['bite_report'] = biteReport;
+    }
     return map;
   }
 
@@ -123,6 +146,23 @@ class SnakeInfo {
     } else {
       this.dividedSubCaudals = "";
       this.undividedSubCaudals = "";
+    }
+
+    if (map['latitude'] != null){
+      this.latitude = map['latitude'];
+    }
+    if (map['longitude'] != null){
+      this.longitude = map['longitude'];
+    }
+    if (map['elevation'] != null){
+      this.elevation = map['elevation'];
+      this.elevationUnit = map['elevation_unit'];
+    }
+    if (map['general_remarks'] != null){
+      this.generalRemarks = map['general_remarks'];
+    }
+    if (map['bite_report'] != null){
+      this.biteReport = map['bite_report'];
     }
 
     this.snakeCondition= map["snake_condition"];
@@ -176,6 +216,23 @@ class SnakeInfo {
     multipartRequest.fields['snake_charm[snake_color]'] = formData.snakeColor;
     multipartRequest.fields['snake_charm[snake_caudals]'] =
         "D:" + formData.dividedSubCaudals + ";" + "U:" + formData.undividedSubCaudals;
+
+    if (formData.latitude != null){
+      multipartRequest.fields['latitude'] = formData.latitude;
+    }
+    if (formData.longitude != null){
+      multipartRequest.fields['longitude'] = formData.longitude;
+    }
+    if (formData.elevation != null){
+      multipartRequest.fields['elevation'] = formData.elevation;
+      multipartRequest.fields['elevation_unit'] = formData.elevationUnit;
+    }
+    if (formData.generalRemarks != null){
+      multipartRequest.fields['general_remarks'] = formData.generalRemarks;
+    }
+    if (formData.biteReport != null){
+      multipartRequest.fields['bite_report'] = formData.biteReport;
+    }
 
     /*for (int i=0; i<formData.imagesInfo.length; i++){
       print('snake_charm[snake_photo_'+ i.toString() +']');

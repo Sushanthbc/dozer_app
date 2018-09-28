@@ -18,10 +18,12 @@ class NewRescueForm extends StatefulWidget {
 // the form.
 class NewRescueFormState extends State<NewRescueForm> {
   String httpAction;
-
+  SnakeInfo _formData;
+  
   @override
   void initState() {
-    if (widget.snakeInfo.id == null) {
+    _formData = widget.snakeInfo;
+    if (_formData.id == null) {
       httpAction = "POST";
     } else {
       httpAction = "PUT";
@@ -50,8 +52,8 @@ class NewRescueFormState extends State<NewRescueForm> {
     setState(() {
       List<String> imagePath = image.path.split("/");
       print(imagePath[imagePath.length - 1]);
-      widget.snakeInfo.images.add(image);
-      widget.snakeInfo.imagesInfo
+      _formData.images.add(image);
+      _formData.imagesInfo
           .add({imagePath[imagePath.length - 1]: result});
     });
   }
@@ -105,13 +107,15 @@ class NewRescueFormState extends State<NewRescueForm> {
     // First validate form.
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save(); // Save our form now.
-      httpInProgress = true;
+      setState(() {
+        httpInProgress = true;
+      });
 
       // Convert DMS LatLng to DD LatLng
       if (_dmsLat["degrees"] != null) {}
 
       // Check if images present in request
-      if (widget.snakeInfo.images.length > 0) {
+      if (_formData.images.length > 0) {
         upload(File imageFile) async {
           var uri = Uri.parse(globals.baseURL + "api/snake_charms");
           if (httpAction == "POST") {
@@ -122,13 +126,13 @@ class NewRescueFormState extends State<NewRescueForm> {
             uri = Uri.parse(
                 globals.baseURL +
                 "api/snake_charms/" +
-                widget.snakeInfo.id.toString()
+                _formData.id.toString()
             );
           }
           var request = new http.MultipartRequest(httpAction, uri);
           request.headers["Accept"] = "application/json";
-          request = SnakeInfo.getMultiPartFields(request, widget.snakeInfo);
-          for (File image in widget.snakeInfo.images) {
+          request = SnakeInfo.getMultiPartFields(request, _formData);
+          for (File image in _formData.images) {
             var file = await http.MultipartFile.fromPath(
               "snake_charm[snake_photos][]",
               image.path,
@@ -140,26 +144,27 @@ class NewRescueFormState extends State<NewRescueForm> {
               response.stream.transform(utf8.decoder).listen((value) {
                 httpInProgress = false;
                 var resp = jsonDecode(value.toString());
-                print(resp["snake_charm_details"]["id"]);
+                //print(resp["snake_charm_details"]["id"]);
+                Navigator.pop(context);
                 Scaffold.of(context).showSnackBar(
                     new SnackBar(content: new Text("Rescue details saved!")));
               }, onError: (err) {
-                httpInProgress = false;
+                setState(() {
+                  httpInProgress = false;
+                });
                 Scaffold.of(context).showSnackBar(new SnackBar(
-                    content: new Text("Server Error. Please try again.")));
+                    content: new Text("Server Error. Please try later.")));
               });
             }
           }, onError: (err) {
             httpInProgress = false;
             Scaffold.of(context).showSnackBar(new SnackBar(
-                content: new Text("Server Error. Please try again.")));
+                content: new Text("Server Error. Please try later.")));
           });
-        }
-
-        ;
-        upload(widget.snakeInfo.image);
+        };
+        upload(_formData.image);
       } else {
-        var req = {"snake_charm": widget.snakeInfo.toMap()};
+        var req = {"snake_charm": _formData.toMap()};
         if (httpAction == "POST") {
           http
               .post(globals.baseURL + "api/snake_charms",
@@ -171,11 +176,14 @@ class NewRescueFormState extends State<NewRescueForm> {
               .then((response) {
             httpInProgress = false;
             if (response.statusCode == 200) {
-              Navigator.pushReplacementNamed(context, "/userSnakesList");
+              Navigator.pop(context);
               Scaffold.of(context).showSnackBar(
                   new SnackBar(content: new Text("New rescue details saved!")));
             }
           }, onError: (err) {
+            setState(() {
+              httpInProgress = false;
+            });
             Scaffold.of(context).showSnackBar(new SnackBar(
                 content: new Text("Server Error. Please try after sometime.")));
           });
@@ -184,7 +192,7 @@ class NewRescueFormState extends State<NewRescueForm> {
               .put(
                   globals.baseURL +
                       "api/snake_charms/" +
-                      widget.snakeInfo.id.toString(),
+                      _formData.id.toString(),
                   headers: {
                     "accept": "application/json",
                     "content-type": "application/json"
@@ -198,6 +206,9 @@ class NewRescueFormState extends State<NewRescueForm> {
                   new SnackBar(content: new Text("Rescue details updated!")));
             }
           }, onError: (err) {
+            setState(() {
+              httpInProgress = false;
+            });
             Scaffold.of(context).showSnackBar(new SnackBar(
                 content: new Text("Server error. Please try after sometime.")));
           });
@@ -224,7 +235,7 @@ class NewRescueFormState extends State<NewRescueForm> {
 
     if (result == null) return;
     setState(() {
-      widget.snakeInfo.rescueDate = result;
+      _formData.rescueDate = result;
     });
   }
 
@@ -237,7 +248,7 @@ class NewRescueFormState extends State<NewRescueForm> {
 
     if (result == null) return;
     setState(() {
-      widget.snakeInfo.rescueTime = result;
+      _formData.rescueTime = result;
     });
   }
 
@@ -246,8 +257,17 @@ class NewRescueFormState extends State<NewRescueForm> {
     // Build a Form widget using the _formKey we created above
     return new Scaffold(
         appBar: AppBar(title: Text('Rescue Form')),
-        drawer: DrawerMain.mainDrawer(context),
-        body: SingleChildScrollView(
+        body: httpInProgress
+          ? new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[new CircularProgressIndicator()],
+                )
+              ],
+          )
+          : SingleChildScrollView(
             child: Form(
                 key: _formKey,
                 child: Column(
@@ -258,7 +278,7 @@ class NewRescueFormState extends State<NewRescueForm> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           new Text('Rescue Date: ' +
-                              formatDate(widget.snakeInfo.rescueDate,
+                              formatDate(_formData.rescueDate,
                                   ['dd', '-', 'mm', '-', 'yyyy'])),
                           new IconButton(
                               icon: Icon(Icons.edit),
@@ -275,7 +295,7 @@ class NewRescueFormState extends State<NewRescueForm> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           new Text(
-                              'Rescue Time: ${widget.snakeInfo.rescueTime.format(context)}'),
+                              'Rescue Time: ${_formData.rescueTime.format(context)}'),
                           new IconButton(
                               icon: Icon(Icons.edit),
                               color: Colors.blue,
@@ -288,33 +308,48 @@ class NewRescueFormState extends State<NewRescueForm> {
                     new ListTile(
                         leading: const Icon(Icons.person),
                         title: new TextFormField(
-                          initialValue: widget.snakeInfo.callerName,
+                          initialValue: _formData.callerName,
                           decoration:
-                              new InputDecoration(labelText: 'Caller Name'),
+                              new InputDecoration(labelText: 'Caller Name*'),
                           onSaved: (value) {
-                            widget.snakeInfo.callerName = value;
+                            _formData.callerName = value;
+                          },
+                          validator: (value) {
+                            if (value == ""){
+                              return "Required.";
+                            }
                           },
                         )),
 
                     new ListTile(
                         leading: const Icon(Icons.phone),
                         title: new TextFormField(
-                          initialValue: widget.snakeInfo.callerPhone,
+                          initialValue: _formData.callerPhone,
                           keyboardType: TextInputType.phone,
                           decoration:
-                              new InputDecoration(labelText: "Caller Phone"),
+                              new InputDecoration(labelText: "Caller Phone*"),
                           onSaved: (value) {
-                            widget.snakeInfo.callerPhone = value;
+                            _formData.callerPhone = value;
+                          },
+                          validator: (value) {
+                            if (value == ""){
+                              return "Required.";
+                            }
                           },
                         )),
 
                     new ListTile(
                       leading: const Icon(Icons.location_on),
                       title: new TextFormField(
-                        initialValue: widget.snakeInfo.address,
-                        decoration: InputDecoration(labelText: 'Address'),
+                        initialValue: _formData.address,
+                        decoration: InputDecoration(labelText: 'Address*'),
                         onSaved: (value) {
-                          widget.snakeInfo.address = value;
+                          _formData.address = value;
+                        },
+                        validator: (value) {
+                          if (value == ""){
+                            return "Required.";
+                          }
                         },
                       ),
                     ),
@@ -322,11 +357,16 @@ class NewRescueFormState extends State<NewRescueForm> {
                     new ListTile(
                       leading: const Icon(Icons.local_post_office),
                       title: new TextFormField(
-                        initialValue: widget.snakeInfo.pincode,
-                        decoration: InputDecoration(labelText: 'Pincode'),
+                        initialValue: _formData.pincode,
+                        decoration: InputDecoration(labelText: 'Pincode*'),
                         keyboardType: TextInputType.number,
                         onSaved: (value) {
-                          widget.snakeInfo.pincode = value;
+                          _formData.pincode = value;
+                        },
+                        validator: (value) {
+                          if (value == ""){
+                            return "Required.";
+                          }
                         },
                       ),
                     ),
@@ -334,17 +374,29 @@ class NewRescueFormState extends State<NewRescueForm> {
                     new ListTile(
                       leading: const Icon(Icons.location_city),
                       title: new TextFormField(
-                        initialValue: widget.snakeInfo.village,
-                        decoration: InputDecoration(labelText: 'Village/Town'),
+                        initialValue: _formData.village,
+                        decoration: InputDecoration(labelText: 'Village/Town*'),
                         onSaved: (value) {
-                          widget.snakeInfo.village = value;
+                          _formData.village = value;
+                        },
+                        validator: (value) {
+                          if (value == ""){
+                            return "Required.";
+                          }
                         },
                       ),
                     ),
 
                     new ListTile(
                       leading: const Icon(Icons.location_on),
-                      title: new InputDecorator(
+                      title: new TextFormField(
+                        enabled: false,
+                        initialValue: _latLngUnit,
+                        decoration: new InputDecoration(
+                          labelText: "Latitude Longitude Units"
+                        ),
+                      )
+                      /*new InputDecorator(
                         decoration: new InputDecoration(
                             labelText: "Latitude Longitude Units"),
                         child: new DropdownButtonHideUnderline(
@@ -362,7 +414,7 @@ class NewRescueFormState extends State<NewRescueForm> {
                                     child: new Text(value),
                                   );
                                 }).toList())),
-                      ),
+                      ),*/
                     ),
 
                     _latLngUnit == 'Degrees Minutes Seconds'
@@ -513,14 +565,14 @@ class NewRescueFormState extends State<NewRescueForm> {
                                   width: 120.0,
                                   child: new TextFormField(
                                     initialValue:
-                                        widget.snakeInfo.latitude.toString(),
+                                        _formData.latitude.toString(),
                                     keyboardType:
                                         new TextInputType.numberWithOptions(
                                             decimal: true),
                                     decoration:
                                         InputDecoration(labelText: 'Latitude'),
                                     onSaved: (value) {
-                                      widget.snakeInfo.latitude = value;
+                                      _formData.latitude = value;
                                     },
                                   ),
                                 ),
@@ -528,14 +580,14 @@ class NewRescueFormState extends State<NewRescueForm> {
                                   width: 120.0,
                                   child: new TextFormField(
                                     initialValue:
-                                        widget.snakeInfo.longitude.toString(),
+                                        _formData.longitude.toString(),
                                     keyboardType:
                                         new TextInputType.numberWithOptions(
                                             decimal: true),
                                     decoration:
                                         InputDecoration(labelText: 'Longitude'),
                                     onSaved: (value) {
-                                      widget.snakeInfo.longitude = value;
+                                      _formData.longitude = value;
                                     },
                                   ),
                                 )
@@ -552,14 +604,14 @@ class NewRescueFormState extends State<NewRescueForm> {
                               width: 120.0,
                               child: new TextFormField(
                                 initialValue:
-                                    widget.snakeInfo.elevation.toString(),
+                                    _formData.elevation.toString(),
                                 keyboardType:
                                     new TextInputType.numberWithOptions(
                                         decimal: true),
                                 decoration:
                                     InputDecoration(labelText: 'Elevation'),
                                 onSaved: (value) {
-                                  widget.snakeInfo.elevation = value;
+                                  _formData.elevation = value;
                                 },
                               ),
                             ),
@@ -570,11 +622,11 @@ class NewRescueFormState extends State<NewRescueForm> {
                                     new InputDecoration(labelText: "Unit"),
                                 child: new DropdownButtonHideUnderline(
                                     child: new DropdownButton<String>(
-                                        value: widget.snakeInfo.elevationUnit,
+                                        value: _formData.elevationUnit,
                                         isDense: true,
                                         onChanged: (String newValue) {
                                           setState(() {
-                                            widget.snakeInfo.elevationUnit =
+                                            _formData.elevationUnit =
                                                 newValue;
                                           });
                                         },
@@ -596,11 +648,11 @@ class NewRescueFormState extends State<NewRescueForm> {
                                 new InputDecoration(labelText: "Macrohabitat"),
                             child: new DropdownButtonHideUnderline(
                                 child: new DropdownButton<String>(
-                                    value: widget.snakeInfo.macroHabitat,
+                                    value: _formData.macroHabitat,
                                     isDense: true,
                                     onChanged: (String newValue) {
                                       setState(() {
-                                        widget.snakeInfo.macroHabitat =
+                                        _formData.macroHabitat =
                                             newValue;
                                       });
                                     },
@@ -618,11 +670,11 @@ class NewRescueFormState extends State<NewRescueForm> {
                                 new InputDecoration(labelText: "Microhabitat"),
                             child: new DropdownButtonHideUnderline(
                                 child: new DropdownButton<String>(
-                                    value: widget.snakeInfo.microHabitat,
+                                    value: _formData.microHabitat,
                                     isDense: true,
                                     onChanged: (String newValue) {
                                       setState(() {
-                                        widget.snakeInfo.microHabitat =
+                                        _formData.microHabitat =
                                             newValue;
                                       });
                                     },
@@ -640,11 +692,11 @@ class NewRescueFormState extends State<NewRescueForm> {
                               new InputDecoration(labelText: "Condition"),
                           child: new DropdownButtonHideUnderline(
                               child: new DropdownButton<String>(
-                                  value: widget.snakeInfo.snakeCondition,
+                                  value: _formData.snakeCondition,
                                   isDense: true,
                                   onChanged: (String newValue) {
                                     setState(() {
-                                      widget.snakeInfo.snakeCondition =
+                                      _formData.snakeCondition =
                                           newValue;
                                     });
                                   },
@@ -666,22 +718,34 @@ class NewRescueFormState extends State<NewRescueForm> {
                               width: 75.0,
                               child: new TextFormField(
                                 initialValue:
-                                    widget.snakeInfo.snakeLength.toString(),
+                                    _formData.snakeLength.toString(),
                                 decoration: InputDecoration(
-                                  labelText: 'Length',
+                                  labelText: 'Length*',
                                 ),
                                 keyboardType: TextInputType.number,
                                 validator: (value) {
-                                  if (value != "" &&
-                                      double.parse(value) < 1.0) {
-                                    return "Min : 1";
-                                  } else if (value != "" &&
-                                      double.parse(value) > 20.0) {
-                                    return "Max : 15";
+                                  if (value == ""){
+                                    return "Required.";
+                                  } else {
+                                    // Validate based on length unit
+                                    if (_formData.snakeLengthUnit == "Feet") {
+                                      if (double.parse(value) < 1.0) {
+                                        return "Min : 1";
+                                      } else if (double.parse(value) > 20.0) {
+                                        return "Max : 20";
+                                      }
+                                    } else {
+                                      // Validation for Metres
+                                      if (double.parse(value) < 0.3) {
+                                        return "Min : 0.3";
+                                      } else if (double.parse(value) > 6.09) {
+                                        return "Max : 6.09";
+                                      }
+                                    }
                                   }
                                 },
                                 onSaved: (value) {
-                                  widget.snakeInfo.snakeLength = value;
+                                  _formData.snakeLength = value;
                                 },
                               ),
                             ),
@@ -692,11 +756,11 @@ class NewRescueFormState extends State<NewRescueForm> {
                                     new InputDecoration(labelText: "Unit"),
                                 child: new DropdownButtonHideUnderline(
                                     child: new DropdownButton<String>(
-                                        value: widget.snakeInfo.snakeLengthUnit,
+                                        value: _formData.snakeLengthUnit,
                                         isDense: true,
                                         onChanged: (String newValue) {
                                           setState(() {
-                                            widget.snakeInfo.snakeLengthUnit =
+                                            _formData.snakeLengthUnit =
                                                 newValue;
                                           });
                                         },
@@ -722,23 +786,35 @@ class NewRescueFormState extends State<NewRescueForm> {
                               margin: const EdgeInsets.only(right: 40.0),
                               child: new TextFormField(
                                 initialValue:
-                                    widget.snakeInfo.snakeWeight.toString(),
+                                    _formData.snakeWeight.toString(),
                                 decoration: InputDecoration(
                                   labelText: 'Weight',
                                 ),
                                 keyboardType: TextInputType.numberWithOptions(
                                     decimal: true),
                                 validator: (value) {
-                                  if (value != "" &&
-                                      double.parse(value) < 0.1) {
-                                    return "Min : 0.1";
-                                  } else if (value != "" &&
-                                      double.parse(value) > 15.0) {
-                                    return "Max : 15";
+                                  // Validate based on weight unit
+                                  if (_formData.snakeWeightUnit == "Kg") {
+                                    if (value != "" &&
+                                        double.parse(value) < 0.1) {
+                                      return "Min : 0.1";
+                                    } else if (value != "" &&
+                                        double.parse(value) > 15.0) {
+                                      return "Max : 15";
+                                    }
+                                  } else {
+                                    // Validation for Pounds
+                                    if (value != "" &&
+                                        double.parse(value) < 0.22) {
+                                      return "Min : 0.22";
+                                    } else if (value != "" &&
+                                        double.parse(value) > 33.06) {
+                                      return "Max : 33.06";
+                                    }
                                   }
                                 },
                                 onSaved: (value) {
-                                  widget.snakeInfo.snakeWeight = value;
+                                  _formData.snakeWeight = value;
                                 },
                               ),
                             ),
@@ -749,11 +825,11 @@ class NewRescueFormState extends State<NewRescueForm> {
                                       new InputDecoration(labelText: "Unit"),
                                   child: new DropdownButtonHideUnderline(
                                     child: new DropdownButton<String>(
-                                        value: widget.snakeInfo.snakeWeightUnit,
+                                        value: _formData.snakeWeightUnit,
                                         isDense: true,
                                         onChanged: (String newValue) {
                                           setState(() {
-                                            widget.snakeInfo.snakeWeightUnit =
+                                            _formData.snakeWeightUnit =
                                                 newValue;
                                           });
                                         },
@@ -776,13 +852,13 @@ class NewRescueFormState extends State<NewRescueForm> {
                         leading:
                             new Padding(padding: EdgeInsets.only(right: 20.0)),
                         title: new TextFormField(
-                          initialValue: widget.snakeInfo.dividedSubCaudals,
+                          initialValue: _formData.dividedSubCaudals,
                           keyboardType: TextInputType.number,
                           decoration: new InputDecoration(
                               labelText: "Divided",
                               hintText: "eg : 1-5,8-12,19-25"),
                           onSaved: (val) {
-                            widget.snakeInfo.dividedSubCaudals = val;
+                            _formData.dividedSubCaudals = val;
                           },
                         )),
 
@@ -790,14 +866,14 @@ class NewRescueFormState extends State<NewRescueForm> {
                         leading:
                             new Padding(padding: EdgeInsets.only(right: 20.0)),
                         title: new TextFormField(
-                          initialValue: widget.snakeInfo.undividedSubCaudals,
+                          initialValue: _formData.undividedSubCaudals,
                           keyboardType: TextInputType.number,
                           decoration: new InputDecoration(
                             labelText: "Undivided",
                             hintText: "eg: 4-7,13-18,26-31",
                           ),
                           onSaved: (val) {
-                            widget.snakeInfo.undividedSubCaudals = val;
+                            _formData.undividedSubCaudals = val;
                           },
                         )),
 
@@ -807,11 +883,11 @@ class NewRescueFormState extends State<NewRescueForm> {
                             decoration: new InputDecoration(labelText: "Color"),
                             child: new DropdownButtonHideUnderline(
                                 child: new DropdownButton<String>(
-                                    value: widget.snakeInfo.snakeColor,
+                                    value: _formData.snakeColor,
                                     isDense: true,
                                     onChanged: (String newValue) {
                                       setState(() {
-                                        widget.snakeInfo.snakeColor = newValue;
+                                        _formData.snakeColor = newValue;
                                       });
                                     },
                                     items: _kcColors.map((String value) {
@@ -829,23 +905,23 @@ class NewRescueFormState extends State<NewRescueForm> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             new Radio<String>(
-                              value: 'male',
-                              groupValue: widget.snakeInfo.snakeSex,
+                              value: 'Male',
+                              groupValue: _formData.snakeSex,
                               activeColor: Colors.blue,
                               onChanged: (value) {
                                 setState(() {
-                                  widget.snakeInfo.snakeSex = value;
+                                  _formData.snakeSex = value;
                                 });
                               },
                             ),
                             new Text('Male'),
                             new Container(width: 50.0, height: 80.0),
                             new Radio<String>(
-                              value: 'female',
-                              groupValue: widget.snakeInfo.snakeSex,
+                              value: 'Female',
+                              groupValue: _formData.snakeSex,
                               onChanged: (value) {
                                 setState(() {
-                                  widget.snakeInfo.snakeSex = value;
+                                  _formData.snakeSex = value;
                                 });
                               },
                             ),
@@ -861,12 +937,12 @@ class NewRescueFormState extends State<NewRescueForm> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             new Radio<String>(
-                              value: 'docile',
-                              groupValue: widget.snakeInfo.snakeBehavior,
+                              value: 'Docile',
+                              groupValue: _formData.snakeBehavior,
                               activeColor: Colors.blue,
                               onChanged: (value) {
                                 setState(() {
-                                  widget.snakeInfo.snakeBehavior = value;
+                                  _formData.snakeBehavior = value;
                                 });
                               },
                             ),
@@ -875,11 +951,11 @@ class NewRescueFormState extends State<NewRescueForm> {
                               width: 38.0,
                             ),
                             new Radio<String>(
-                              value: 'defensive',
-                              groupValue: widget.snakeInfo.snakeBehavior,
+                              value: 'Defensive',
+                              groupValue: _formData.snakeBehavior,
                               onChanged: (value) {
                                 setState(() {
-                                  widget.snakeInfo.snakeBehavior = value;
+                                  _formData.snakeBehavior = value;
                                 });
                               },
                             ),
@@ -890,8 +966,12 @@ class NewRescueFormState extends State<NewRescueForm> {
                     new Padding(
                       padding: EdgeInsets.only(left: 20.0, right: 20.0),
                       child: new TextFormField(
+                        initialValue: _formData.generalRemarks,
                         decoration:
                             new InputDecoration(labelText: 'General Remarks'),
+                        onSaved: (val){
+                          _formData.generalRemarks = val;
+                        },
                       ),
                     ),
 
@@ -899,12 +979,16 @@ class NewRescueFormState extends State<NewRescueForm> {
                       padding: EdgeInsets.only(
                           left: 20.0, right: 20.0, top: 10.0, bottom: 20.0),
                       child: new TextFormField(
+                        initialValue: _formData.biteReport,
                         decoration:
                             new InputDecoration(labelText: 'Bite Report'),
+                        onSaved: (val){
+                          _formData.biteReport = val;
+                        },
                       ),
                     ),
 
-                    widget.snakeInfo.snakePhotos.length > 0
+                    _formData.snakePhotos.length > 0
                         ? new GridView.count(
                             shrinkWrap: true,
                             crossAxisCount: 3,
@@ -945,18 +1029,18 @@ class NewRescueFormState extends State<NewRescueForm> {
                           ),
                         )),
 
-                    widget.snakeInfo.images.length > 0
+                    _formData.images.length > 0
                         ? new GridView.count(
                             shrinkWrap: true,
                             crossAxisCount: 3,
                             children: List.generate(
-                                widget.snakeInfo.images.length, (index) {
+                                _formData.images.length, (index) {
                               return Center(
                                   child: new Column(
                                 children: <Widget>[
                                   new Image.file(
-                                      widget.snakeInfo.images[index]),
-                                  //new Text(widget.snakeInfo.imagesInfo[index]['image'])
+                                      _formData.images[index]),
+                                  //new Text(_formData.imagesInfo[index]['image'])
                                 ],
                               ));
                             }))

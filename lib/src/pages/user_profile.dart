@@ -78,10 +78,18 @@ class UserProfileFormState extends State<UserProfileForm> {
           );
         } else {
           // TODO handle new user registration error
-          print("error");
+          Scaffold.of(context).showSnackBar(
+              SnackBar(
+                  content: Text("Update failed. Please try again.")
+              )
+          );
         }
       }, onError: (err) {
-        print('error checking first user');
+        Scaffold.of(context).showSnackBar(
+            SnackBar(
+                content: Text("Server Error. Please try after sometime.")
+            )
+        );
       });
     }
   }

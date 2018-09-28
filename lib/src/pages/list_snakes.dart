@@ -28,7 +28,7 @@ class ListSnakes extends StatelessWidget {
             IconButton(
                 icon: Icon(Icons.add),
                 onPressed: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => NewRescueForm(
@@ -36,8 +36,8 @@ class ListSnakes extends StatelessWidget {
                             rescueDate: new DateTime.now(),
                             rescueTime: new TimeOfDay.now(),
                             snakeCondition: 'Healthy',
-                            snakeSex: 'male',
-                            snakeBehavior: 'docile',
+                            snakeSex: 'Male',
+                            snakeBehavior: 'Docile',
                             snakeLength: '',
                             snakeLengthUnit: 'Feet',
                             snakeWeight: '',
@@ -73,10 +73,14 @@ class SnakesListView extends StatefulWidget {
 class SnakesListViewState extends State<SnakesListView> {
   int usrId = globals.loggedInUserId;
 
+  Future _snakesList;
+  initState() {
+    super.initState();
+    _snakesList = _getSnakesList();
+  }
+
   Future<List<SnakeInfo>> _getSnakesList() async {
-    print(baseURL +usrId.toString());
     final response = await http.get(baseURL +usrId.toString());
-    print(response.statusCode);
     var responseJson = json.decode(response.body.toString());
     List<SnakeInfo> snakesList = _createSnakesList(responseJson["snake_charm"]);
     return snakesList;
@@ -120,7 +124,7 @@ class SnakesListViewState extends State<SnakesListView> {
   @override
   Widget build(BuildContext context) {
     return new FutureBuilder<List<SnakeInfo>>(
-      future: _getSnakesList(),
+      future: _snakesList,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data.length > 0) {
