@@ -185,21 +185,12 @@ class SnakesListViewState extends State<SnakesListView> {
                                   icon: new Icon(Icons.keyboard_arrow_right),
                                   color: Colors.blue,
                                   onPressed: () {
-                                    //Navigator.pushNamed(context, '/snakeDetail');
-                                    Navigator.pushReplacement(
+                                    Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => DetailScreen(recordId : snapshot.data[index].id.toString()),
                                         ),
                                       );
-                                    /*Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => NewRescueForm(
-                                            action: snapshot.data[index].id
-                                                .toString()),
-                                      ),
-                                    );*/
                                   })
                             ],
                           ),

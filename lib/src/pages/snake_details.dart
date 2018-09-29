@@ -12,7 +12,6 @@ class DetailScreen extends StatelessWidget{
   Widget build(BuildContext context) {
 
     return new Scaffold(
-        drawer: DrawerMain.mainDrawer(context),
         appBar: AppBar(
             title: Text("Rescue Detail"),
           actions: <Widget>[

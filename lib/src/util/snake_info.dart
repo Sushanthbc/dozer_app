@@ -156,13 +156,20 @@ class SnakeInfo {
 
     if (map['latitude'] != null){
       this.latitude = map['latitude'];
+    } else {
+      this.latitude = "";
     }
     if (map['longitude'] != null){
       this.longitude = map['longitude'];
+    } else {
+      this.longitude = "";
     }
     if (map['elevation'] != null){
       this.elevation = map['elevation'];
       this.elevationUnit = map['elevation_unit'];
+    } else {
+      this.elevation = "";
+      this.elevationUnit = "Feet";
     }
     if (map['general_remarks'] != null){
       this.generalRemarks = map['general_remarks'];
