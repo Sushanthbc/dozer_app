@@ -62,6 +62,7 @@ class RescueDetailState extends State<RescueDetail> {
     print(response.body.toString());
     if (response.statusCode == 200) {
       // If server returns an OK response, parse the JSON
+      print(response.body.toString());
       var resp = json.decode(response.body.toString());
       snakeInfo = SnakeInfo.fromMap(resp);
       return snakeInfo;
@@ -146,7 +147,9 @@ class RescueDetailState extends State<RescueDetail> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text("Weight"),
-                      Text(
+                      snakeInfo.snakeWeight == ""
+                      ? Text("N/A")
+                      : Text(
                           "${snakeInfo.snakeWeight} ${snakeInfo.snakeWeightUnit}"
                       )
                     ],
@@ -203,6 +206,41 @@ class RescueDetailState extends State<RescueDetail> {
                       )
                     ],
                   ),
+                ),
+
+                ListTile(
+                  leading: const Icon(Icons.straighten),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text("Subcaudals"),
+                      snakeInfo.dividedSubCaudals == ""
+                      ? Text("N/A")
+                      : Container()
+                    ],
+                  ),
+                  subtitle:
+                  snakeInfo.dividedSubCaudals == ""
+                  ? Container()
+                  : new Column(
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text("Divided:"),
+                          Text(snakeInfo.dividedSubCaudals)
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text("Undivided:"),
+                          Text(snakeInfo.undividedSubCaudals)
+                        ],
+                      )
+                    ],
+                  )
                 ),
 
                 new Padding(
@@ -321,7 +359,16 @@ class RescueDetailState extends State<RescueDetail> {
           }
 
           // By default, show a loading spinner
-          return CircularProgressIndicator();
+          return new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[new CircularProgressIndicator()],
+              )
+            ],
+          );
         },
       ),
 

@@ -12,6 +12,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'globals.dart' as globals;
+import 'package:url_launcher/url_launcher.dart';
 
 
 part 'util/image_info.dart';
@@ -30,6 +31,7 @@ part 'pages/list_users.dart';
 part 'pages/form_new_user.dart';
 part 'pages/user_profile.dart';
 part 'pages/image_viewer.dart';
+part 'pages/contact_us.dart';
 
 class DozerApp extends StatelessWidget {
   @override
@@ -47,7 +49,8 @@ class DozerApp extends StatelessWidget {
         '/userSnakesList': (context) => new ListSnakes(listName: "userRecords"),
         '/adminSnakesList': (context) => new ListSnakes(listName: "adminRecords"),
         '/usersList': (context) => new UsersList(),
-        '/userProfile': (context) => new UserProfile()
+        '/userProfile': (context) => new UserProfile(),
+        '/contactUs': (context) => new ContactUs()
       },
     );
   }

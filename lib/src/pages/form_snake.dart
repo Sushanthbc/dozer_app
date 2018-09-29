@@ -17,8 +17,11 @@ class NewRescueForm extends StatefulWidget {
 // Create a corresponding State class. This class will hold the data related to
 // the form.
 class NewRescueFormState extends State<NewRescueForm> {
+
   String httpAction;
   SnakeInfo _formData;
+  bool _formErr = false;
+  bool _serverErr = false;
   
   @override
   void initState() {
@@ -104,12 +107,13 @@ class NewRescueFormState extends State<NewRescueForm> {
   };
 
   void submit() {
+    setState(() {
+      httpInProgress = true;
+    });
     // First validate form.
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save(); // Save our form now.
-      setState(() {
-        httpInProgress = true;
-      });
+
 
       // Convert DMS LatLng to DD LatLng
       if (_dmsLat["degrees"] != null) {}
@@ -144,22 +148,24 @@ class NewRescueFormState extends State<NewRescueForm> {
               response.stream.transform(utf8.decoder).listen((value) {
                 httpInProgress = false;
                 var resp = jsonDecode(value.toString());
-                //print(resp["snake_charm_details"]["id"]);
-                Navigator.pop(context);
-                Scaffold.of(context).showSnackBar(
-                    new SnackBar(content: new Text("Rescue details saved!")));
+                Navigator.pushReplacementNamed(context, '/userSnakesList');
               }, onError: (err) {
                 setState(() {
                   httpInProgress = false;
+                  _serverErr = true;
                 });
-                Scaffold.of(context).showSnackBar(new SnackBar(
-                    content: new Text("Server Error. Please try later.")));
+              });
+            } else {
+              setState(() {
+                httpInProgress = false;
+                _serverErr = true;
               });
             }
           }, onError: (err) {
-            httpInProgress = false;
-            Scaffold.of(context).showSnackBar(new SnackBar(
-                content: new Text("Server Error. Please try later.")));
+            setState(() {
+              httpInProgress = false;
+              _serverErr = true;
+            });
           });
         };
         upload(_formData.image);
@@ -176,16 +182,18 @@ class NewRescueFormState extends State<NewRescueForm> {
               .then((response) {
             httpInProgress = false;
             if (response.statusCode == 200) {
-              Navigator.pop(context);
-              Scaffold.of(context).showSnackBar(
-                  new SnackBar(content: new Text("New rescue details saved!")));
+              Navigator.pushReplacementNamed(context, '/userSnakesList');
+            } else {
+              setState(() {
+                httpInProgress = false;
+                _serverErr = true;
+              });
             }
           }, onError: (err) {
             setState(() {
               httpInProgress = false;
+              _serverErr = true;
             });
-            Scaffold.of(context).showSnackBar(new SnackBar(
-                content: new Text("Server Error. Please try after sometime.")));
           });
         } else {
           http
@@ -202,21 +210,25 @@ class NewRescueFormState extends State<NewRescueForm> {
             print(response.statusCode);
             if (response.statusCode == 200) {
               Navigator.pop(context);
-              Scaffold.of(context).showSnackBar(
-                  new SnackBar(content: new Text("Rescue details updated!")));
+            } else {
+              setState(() {
+                httpInProgress = false;
+                _serverErr = true;
+              });
             }
           }, onError: (err) {
             setState(() {
               httpInProgress = false;
+              _serverErr = true;
             });
-            Scaffold.of(context).showSnackBar(new SnackBar(
-                content: new Text("Server error. Please try after sometime.")));
           });
         }
       }
     } else {
-      // TODO validation message display
-      print('validation failed');
+      setState(() {
+        httpInProgress = false;
+        _formErr = true;
+      });
     }
   }
 
@@ -254,8 +266,11 @@ class NewRescueFormState extends State<NewRescueForm> {
 
   @override
   Widget build(BuildContext context) {
+
+
     // Build a Form widget using the _formKey we created above
     return new Scaffold(
+        drawer: httpAction == "POST" ? DrawerMain.mainDrawer(context) : null,
         appBar: AppBar(title: Text('Rescue Form')),
         body: httpInProgress
           ? new Column(
@@ -272,6 +287,30 @@ class NewRescueFormState extends State<NewRescueForm> {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
+
+                    _serverErr == true
+                        ? new Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: new Row(
+                        children: <Widget>[
+                          new Flexible(
+                            child: new Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                new Text(
+                                  "Server Error. Please try again after sometime and if the issue persists, contact administrator.",
+                                  style: new TextStyle(
+                                      color: Colors.red
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    : new Container(),
+
                     new ListTile(
                       leading: const Icon(Icons.calendar_today),
                       title: new Row(
@@ -312,6 +351,7 @@ class NewRescueFormState extends State<NewRescueForm> {
                           decoration:
                               new InputDecoration(labelText: 'Caller Name*'),
                           onSaved: (value) {
+
                             _formData.callerName = value;
                           },
                           validator: (value) {
@@ -1046,6 +1086,30 @@ class NewRescueFormState extends State<NewRescueForm> {
                             }))
                         : new Container(),
 
+                    _formErr == true
+                    ? new Padding(
+                        padding: EdgeInsets.all(20.0),
+                      child: new Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          new Flexible(
+                            child: new Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                new Text(
+                                  "Invalid data. Please review and submit again.",
+                                  style: new TextStyle(
+                                    color: Colors.red
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    : new Container(),
+
                     // Form Submit button
                     new RaisedButton(
                         child: new Text(
@@ -1053,8 +1117,13 @@ class NewRescueFormState extends State<NewRescueForm> {
                           style: new TextStyle(color: Colors.white),
                         ),
                         onPressed: this.submit,
-                        color: Colors.blue)
+                        color: Colors.blue
+                    ),
+
                   ],
-                ))));
+                )
+            )
+        )
+    );
   }
 }

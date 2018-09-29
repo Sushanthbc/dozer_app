@@ -35,14 +35,16 @@ class DrawerMain{
             },
           ),
 
-          ListTile(
-            leading: Icon(Icons.view_list),
-            title: Text('All Records'),
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/adminSnakesList');
-              //Navigator.pop(context);
-            },
-          ),
+          globals.isUserAdmin == true
+          ? ListTile(
+              leading: Icon(Icons.view_list),
+              title: Text('All Records'),
+              onTap: () {
+                Navigator.pushReplacementNamed(context, '/adminSnakesList');
+                //Navigator.pop(context);
+              },
+            )
+          : Container(),
 
           ListTile(
             leading: Icon(Icons.person),
@@ -63,9 +65,18 @@ class DrawerMain{
           ),
 
           ListTile(
-            leading: Icon(Icons.arrow_back),
-            title: Text('Sign Out'),
+            leading: Icon(Icons.phone),
+            title: Text('Contact Us'),
+            onTap: (){
+              Navigator.pop(context);
+              Navigator.pushReplacementNamed(context, '/contactUs');
+            },
           )
+
+//          ListTile(
+//            leading: Icon(Icons.arrow_back),
+//            title: Text('Sign Out'),
+//          )
 
 
         ],

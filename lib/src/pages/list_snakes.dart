@@ -28,7 +28,7 @@ class ListSnakes extends StatelessWidget {
             IconButton(
                 icon: Icon(Icons.add),
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => NewRescueForm(
@@ -55,7 +55,9 @@ class ListSnakes extends StatelessWidget {
                         ),
                       ),
                     ),
-                  );
+                  ).then((value){
+
+                  });
                 })
           ],
         ),
@@ -74,6 +76,7 @@ class SnakesListViewState extends State<SnakesListView> {
   int usrId = globals.loggedInUserId;
 
   Future _snakesList;
+  @override
   initState() {
     super.initState();
     _snakesList = _getSnakesList();
@@ -228,7 +231,8 @@ class SnakesListViewState extends State<SnakesListView> {
                                   ),
                                 ),
                               ),
-                              new Container(
+                              snapshot.data[index].snakeWeight != "null"
+                              ? new Container(
                                 margin: EdgeInsets.only(right: 10.0),
                                 child: new Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -249,7 +253,9 @@ class SnakesListViewState extends State<SnakesListView> {
                                   ],
                                 ),
                               )
-                            ],
+                              : new Container()
+                            ]
+
                           ),
                           new Row(
                             mainAxisSize: MainAxisSize.max,

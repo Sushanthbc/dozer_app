@@ -48,20 +48,14 @@ class _SplashPageState extends State<SplashPage> {
               });
 
             } else {
+              SharedPref.setUserIdPref(resp["user"]["id"], resp["user"]["admin"]);
               SharedPref.getUserDetails().then((userDetails) {
-                if (userDetails["userId"] == null) {
-                  SharedPref.setUserIdPref(resp["user"]["id"], resp["user"]["admin"]);
-                  globals.loggedInUserId = resp["user"]["id"];
-                  globals.isUserAdmin = resp["user"]["admin"];
-                } else {
-                  globals.loggedInUserId = userDetails["userId"];
-                  globals.isUserAdmin = userDetails["isAdmin"];
-                }
-                Navigator.pushReplacementNamed(context, '/userSnakesList');
+                globals.loggedInUserId = resp["user"]["id"];
+                globals.isUserAdmin = resp["user"]["admin"];
+               Navigator.pushReplacementNamed(context, '/userSnakesList');
               });
 
             }
-
           }, onError: (err){
             Scaffold.of(context).showSnackBar(
               SnackBar(content: Text("Server error! Please try after sometime."))

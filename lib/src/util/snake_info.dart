@@ -129,11 +129,17 @@ class SnakeInfo {
     this.callerName = map['caller_name'];
     this.callerPhone = map['caller_phone'];
     this.snakeLength = map["snake_length"].toString();
-    this.snakeLengthUnit= map["snake_length_unit"];
-    this.snakeWeight= map["snake_weight"].toString();
-    this.snakeWeightUnit= map["snake_weight_unit"];
-    this.snakeColor= map["snake_color"];
-    this.snakeSex= map["snake_sex"];
+    this.snakeLengthUnit = map["snake_length_unit"];
+    this.snakeColor = map["snake_color"];
+    this.snakeSex = map["snake_sex"];
+
+    if (map["snake_weight"].toString() == "null"){
+      this.snakeWeight = "";
+    } else {
+      this.snakeWeight = map["snake_weight"].toString();
+    }
+    this.snakeWeightUnit = map["snake_weight_unit"];
+
     //this.dividedSubCaudals= map["snake_caudals"]["divided"];
     //this.undividedSubCaudals= map["snake_caudals"]["undivided"];
 
@@ -218,20 +224,20 @@ class SnakeInfo {
         "D:" + formData.dividedSubCaudals + ";" + "U:" + formData.undividedSubCaudals;
 
     if (formData.latitude != null){
-      multipartRequest.fields['latitude'] = formData.latitude;
+      multipartRequest.fields['snake_charm[latitude]'] = formData.latitude;
     }
     if (formData.longitude != null){
-      multipartRequest.fields['longitude'] = formData.longitude;
+      multipartRequest.fields['snake_charm[longitude]'] = formData.longitude;
     }
     if (formData.elevation != null){
-      multipartRequest.fields['elevation'] = formData.elevation;
-      multipartRequest.fields['elevation_unit'] = formData.elevationUnit;
+      multipartRequest.fields['snake_charm[elevation]'] = formData.elevation;
+      multipartRequest.fields['snake_charm[elevation_unit]'] = formData.elevationUnit;
     }
     if (formData.generalRemarks != null){
-      multipartRequest.fields['general_remarks'] = formData.generalRemarks;
+      multipartRequest.fields['snake_charm[general_remarks]'] = formData.generalRemarks;
     }
     if (formData.biteReport != null){
-      multipartRequest.fields['bite_report'] = formData.biteReport;
+      multipartRequest.fields['snake_charm[bite_report]'] = formData.biteReport;
     }
 
     /*for (int i=0; i<formData.imagesInfo.length; i++){

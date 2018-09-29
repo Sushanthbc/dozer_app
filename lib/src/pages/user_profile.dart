@@ -230,7 +230,15 @@ class UserProfileFormState extends State<UserProfileForm> {
           }
 
           // By default, show a loading spinner
-          return CircularProgressIndicator();
+          return new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[new CircularProgressIndicator()],
+              )
+            ],
+          );
         },
       ),
 

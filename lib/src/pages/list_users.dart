@@ -71,16 +71,20 @@ class UsersListViewState extends State<UsersListView>{
                         style: Theme.of(context).textTheme.title,
 
                       ),
-                      subtitle: new Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          new Container(
-                            child: Text(snapshot.data[index].emailID),
-                            margin: EdgeInsets.only(top:5.0, bottom: 5.0),
-                          ),
-                          Text(snapshot.data[index].phone)
-                        ],
-                      ),
+                      subtitle: globals.isUserAdmin == true
+                      ? new Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            new Container(
+                              child: Text(snapshot.data[index].emailID),
+                              margin: EdgeInsets.only(top:5.0, bottom: 5.0),
+                            ),
+                            Text(snapshot.data[index].phone)
+                          ],
+                        )
+                      : new Container(
+                          child: Text(snapshot.data[index].aboutUser),
+                        )
                     ),
                     Divider(color: Colors.grey)
                   ],
@@ -105,7 +109,15 @@ class UsersListViewState extends State<UsersListView>{
 
         } else {
 
-          return CircularProgressIndicator();
+          return new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[new CircularProgressIndicator()],
+              )
+            ],
+          );
 
         }
 
