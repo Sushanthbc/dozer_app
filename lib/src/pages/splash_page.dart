@@ -98,7 +98,7 @@ class _SplashPageState extends State<SplashPage> {
                 alignment: Alignment.topCenter,
                 child: new Padding(
                   padding: EdgeInsets.only(top:30.0),
-                  child: new Text('Kaalinga',
+                  child: new Text('Kalinga',
                     style: new TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 30.0,
