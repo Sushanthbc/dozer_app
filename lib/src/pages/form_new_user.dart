@@ -46,8 +46,13 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
           var resp = jsonDecode(response.body.toString());
           SharedPref.setUserIdPref(resp["user"]["id"], resp["user"]["admin"]);
           SharedPref.getUserDetails().then((userDetails) {
-            globals.loggedInUserId = userDetails["userId"];
-            globals.isUserAdmin = userDetails["isAdmin"];
+            if (userDetails["userId"] == null){
+              globals.loggedInUserId = resp["user"]["id"];
+              globals.isUserAdmin = resp["user"]["admin"];
+            } else {
+              globals.loggedInUserId = userDetails["userId"];
+              globals.isUserAdmin = userDetails["isAdmin"];
+            }
             Navigator.pushReplacementNamed(context, '/userSnakesList');
           });
         } else {

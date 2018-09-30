@@ -11,9 +11,9 @@ class ContactUs extends StatelessWidget{
         title: Text("Contact Us"),
       ),
       body: new Padding(
-          padding: EdgeInsets.all(5.0),
+          padding: EdgeInsets.only(left:5.0, top:20.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
 
               ListTile(
@@ -24,9 +24,9 @@ class ContactUs extends StatelessWidget{
                     },
                 ),
                 title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Text("Phone"),
+                    //Text("Phone"),
                     Text("+91 9480877670"),
                   ],
                 )
@@ -40,9 +40,9 @@ class ContactUs extends StatelessWidget{
                     },
                   ),
                   title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Text("Email"),
+                      //Text("Email"),
                       Text("ophiohannah2018@gmail.com"),
                     ],
                   )
@@ -56,9 +56,9 @@ class ContactUs extends StatelessWidget{
                     },
                   ),
                   title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      Text("Website"),
+                      //Text("Website"),
                       Text("kalingacre.com/"),
                     ],
                   )

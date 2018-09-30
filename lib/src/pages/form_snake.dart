@@ -54,7 +54,6 @@ class NewRescueFormState extends State<NewRescueForm> {
     );
     setState(() {
       List<String> imagePath = image.path.split("/");
-      print(imagePath[imagePath.length - 1]);
       _formData.images.add(image);
       _formData.imagesInfo
           .add({imagePath[imagePath.length - 1]: result});
@@ -211,7 +210,6 @@ class NewRescueFormState extends State<NewRescueForm> {
                   },
                   body: jsonEncode(req))
               .then((response) {
-            print(response.statusCode);
             if (response.statusCode == 200) {
               Navigator.pop(context);
             } else {
