@@ -55,9 +55,7 @@ class ListSnakes extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ).then((value){
-
-                  });
+                  );
                 })
           ],
         ),
@@ -110,7 +108,9 @@ class SnakesListViewState extends State<SnakesListView> {
           village: dataFromServer[i]["village"],
           pincode: dataFromServer[i]["pincode"],
           macroHabitat: dataFromServer[i]["snake_macro_habitat"],
-          microHabitat: dataFromServer[i]["snake_micro_habitat"]);
+          microHabitat: dataFromServer[i]["snake_micro_habitat"],
+          rescuedBy: dataFromServer[i]["created_by"] != null ? dataFromServer[i]["created_by"] : ""
+      );
       list.add(snakeInfo);
     }
     return list;
@@ -264,6 +264,19 @@ class SnakesListViewState extends State<SnakesListView> {
                               )
                             ],
                           ),
+
+                          globals.isUserAdmin == true
+                          ? new Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                new Padding(
+                                  padding: EdgeInsets.only(top: 10.0, right: 10.0),
+                                  child: new Text(snapshot.data[index].rescuedBy),
+                                ),
+                              ],
+                            )
+                          : new Container(),
+
                           new Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[

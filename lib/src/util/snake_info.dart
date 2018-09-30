@@ -18,6 +18,9 @@ class SnakeInfo {
   DateTime rescueDate;
   TimeOfDay rescueTime;
 
+  String userId;
+  String rescuedBy;
+
   String callerName;
   String callerPhone;
   String address;
@@ -38,6 +41,8 @@ class SnakeInfo {
   List snakePhotos;
   List<Map> imagesInfo;
   File image;
+
+  Map rescuerDetail;
 
 
   SnakeInfo({
@@ -72,7 +77,10 @@ class SnakeInfo {
     this.imagesInfo,
     this.snakePhotos,
     this.generalRemarks,
-    this.biteReport
+    this.biteReport,
+    this.rescuedBy,
+    this.userId,
+    this.rescuerDetail
   });
 
   Map<String, dynamic> toMap() {
@@ -121,7 +129,7 @@ class SnakeInfo {
       map['bite_report'] = biteReport;
     }
     if (cntBands != ""){
-      map['no_of_bands'] = cntBands;
+      map['number_of_bands'] = cntBands;
     }
     return map;
   }
@@ -159,8 +167,8 @@ class SnakeInfo {
       this.undividedSubCaudals = "";
     }
 
-    if (map["no_of_bands"] != null){
-      this.cntBands = map["no_of_bands"].toString();
+    if (map["number_of_bands"] != null){
+      this.cntBands = map["number_of_bands"].toString();
     } else {
       this.cntBands = "";
     }
@@ -199,6 +207,15 @@ class SnakeInfo {
     this.macroHabitat= map["snake_macro_habitat"];
     this.microHabitat= map["snake_micro_habitat"];
     this.images = [];
+
+    this.userId = map["user_id"].toString();
+    if (map["created_by"] != null){
+      this.rescuedBy = map["created_by"];
+    }
+
+    if (map["user_detail"] != null){
+      this.rescuerDetail = map["user_detail"][0];
+    }
     
     // Photo links
     if (map["snake_photos"].length > 0) {
@@ -258,7 +275,7 @@ class SnakeInfo {
       multipartRequest.fields['snake_charm[bite_report]'] = formData.biteReport;
     }
     if (formData.cntBands != ""){
-      multipartRequest.fields['snake_charm[no_of_bands]'] = formData.cntBands;
+      multipartRequest.fields['snake_charm[number_of_bands]'] = formData.cntBands;
     }
 
     /*for (int i=0; i<formData.imagesInfo.length; i++){

@@ -50,6 +50,7 @@ class RescueDetailState extends State<RescueDetail> {
   initState() {
     super.initState();
     _future = _getRescueDetail();
+
   }
   final _formKey = GlobalKey<FormState>();
 
@@ -208,6 +209,20 @@ class RescueDetailState extends State<RescueDetail> {
                 ),
 
                 ListTile(
+                    leading: const Icon(Icons.texture),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text("No. of Bands"),
+                        snakeInfo.cntBands == ""
+                            ? Text("N/A")
+                            : Text("${snakeInfo.cntBands}")
+                      ],
+                    ),
+                ),
+
+                ListTile(
                   leading: const Icon(Icons.straighten),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -314,6 +329,66 @@ class RescueDetailState extends State<RescueDetail> {
                         Text("Pincode"),
                         Text(
                             snakeInfo.pincode
+                        )
+                      ]
+                  ),
+                ),
+
+                new Padding(
+                  padding: EdgeInsets.only(top:40.0, left:20.0, bottom: 20.0),
+                  child: new Text(
+                    "Rescued By :",
+                    style: Theme.of(context).textTheme.title,
+                  ),
+                ),
+
+                ListTile(
+                  leading: const Icon(Icons.person),
+                  title: new Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text("Name"),
+                        Text(
+                          "${snakeInfo.rescuerDetail["first_name"]} ${snakeInfo.rescuerDetail["last_name"]}"
+                        )
+                      ]
+                  ),
+                ),
+
+                ListTile(
+                  leading: const Icon(Icons.phone),
+                  title: new Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text("Phone"),
+                        Text(
+                            "${snakeInfo.rescuerDetail["phone"]}"
+                        )
+                      ]
+                  ),
+                ),
+
+                ListTile(
+                  leading: const Icon(Icons.mail),
+                  title: new Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text("Email"),
+                        Text(
+                            "${snakeInfo.rescuerDetail["email_id"]}"
+                        )
+                      ]
+                  ),
+                ),
+
+                ListTile(
+                  leading: const Icon(Icons.work),
+                  title: new Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text("About User"),
+                        Text(
+                            "${snakeInfo.rescuerDetail["about_user"]}"
                         )
                       ]
                   ),

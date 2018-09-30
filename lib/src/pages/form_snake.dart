@@ -182,7 +182,11 @@ class NewRescueFormState extends State<NewRescueForm> {
               .then((response) {
             httpInProgress = false;
             if (response.statusCode == 200) {
-              Navigator.pushReplacementNamed(context, '/userSnakesList');
+              if (httpAction == "POST") {
+                Navigator.pushReplacementNamed(context, '/userSnakesList');
+              } else {
+                Navigator.pop(context);
+              }
             } else {
               setState(() {
                 httpInProgress = false;

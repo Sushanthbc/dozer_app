@@ -179,7 +179,7 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
                           }),
                     ),
                     new Padding(
-                      padding: EdgeInsets.only(top: 20.0),
+                      padding: EdgeInsets.only(top: 20.0,bottom: 30.0),
                       child: new RaisedButton(
                         onPressed: this.submit,
                         color: Colors.blue,
