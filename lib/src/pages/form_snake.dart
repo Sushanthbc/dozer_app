@@ -885,6 +885,20 @@ class NewRescueFormState extends State<NewRescueForm> {
                         )),
 
                     new ListTile(
+                      leading: const Icon(Icons.texture),
+                      title: new TextFormField(
+                        initialValue: _formData.cntBands,
+                        keyboardType: TextInputType.numberWithOptions(decimal:false),
+                        decoration: new InputDecoration(
+                          labelText: "No. of bands",
+                        ),
+                        onSaved: (val){
+                          _formData.cntBands = val;
+                        },
+                      ),
+                    ),
+
+                    new ListTile(
                         leading: const Icon(Icons.straighten),
                         title: new Text('Subcaudals:')),
 
@@ -1003,30 +1017,36 @@ class NewRescueFormState extends State<NewRescueForm> {
                           ],
                         )),
 
+
+
                     new Padding(
-                      padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                      child: new TextFormField(
-                        initialValue: _formData.generalRemarks,
-                        decoration:
-                            new InputDecoration(labelText: 'General Remarks'),
-                        onSaved: (val){
-                          _formData.generalRemarks = val;
-                        },
+                      padding: EdgeInsets.only(top:20.0),
+                      child: new ListTile(
+                        leading: const Icon(Icons.comment),
+                        title: new TextFormField(
+                          initialValue: _formData.generalRemarks,
+                          decoration:
+                          new InputDecoration(labelText: 'General Remarks'),
+                          onSaved: (val){
+                            _formData.generalRemarks = val;
+                          },
+                        ),
                       ),
                     ),
 
-                    new Padding(
-                      padding: EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 20.0),
-                      child: new TextFormField(
+                    new ListTile(
+                      leading: const Icon(Icons.warning),
+                      title: new TextFormField(
                         initialValue: _formData.biteReport,
                         decoration:
-                            new InputDecoration(labelText: 'Bite Report'),
+                        new InputDecoration(labelText: 'Bite Report'),
                         onSaved: (val){
                           _formData.biteReport = val;
                         },
                       ),
                     ),
+
+                    new SizedBox(height:30.0),
 
                     _formData.snakePhotos.length > 0
                         ? new GridView.count(

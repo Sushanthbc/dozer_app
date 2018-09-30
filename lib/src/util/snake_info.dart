@@ -10,6 +10,7 @@ class SnakeInfo {
   String snakeColor;
   String snakeBehavior;
   String snakeCondition;
+  String cntBands;
   String dividedSubCaudals;
   String undividedSubCaudals;
 
@@ -48,6 +49,7 @@ class SnakeInfo {
     this.snakeColor,
     this.snakeBehavior,
     this.snakeCondition,
+    this.cntBands,
     this.dividedSubCaudals,
     this.undividedSubCaudals,
     this.callerName,
@@ -118,6 +120,9 @@ class SnakeInfo {
     if (biteReport != null){
       map['bite_report'] = biteReport;
     }
+    if (cntBands != ""){
+      map['no_of_bands'] = cntBands;
+    }
     return map;
   }
 
@@ -152,6 +157,12 @@ class SnakeInfo {
     } else {
       this.dividedSubCaudals = "";
       this.undividedSubCaudals = "";
+    }
+
+    if (map["no_of_bands"] != null){
+      this.cntBands = map["no_of_bands"].toString();
+    } else {
+      this.cntBands = "";
     }
 
     if (map['latitude'] != null){
@@ -245,6 +256,9 @@ class SnakeInfo {
     }
     if (formData.biteReport != null){
       multipartRequest.fields['snake_charm[bite_report]'] = formData.biteReport;
+    }
+    if (formData.cntBands != ""){
+      multipartRequest.fields['snake_charm[no_of_bands]'] = formData.cntBands;
     }
 
     /*for (int i=0; i<formData.imagesInfo.length; i++){
