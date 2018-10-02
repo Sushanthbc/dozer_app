@@ -26,6 +26,7 @@ class UserRegistrationForm extends StatefulWidget {
 
 class UserRegistrationFormState extends State<UserRegistrationForm> {
   final _formKey = GlobalKey<FormState>();
+  String _serverErr;
 
   //TODO: We have to move away from dropdown to something else
   List<String> _aboutList = ['Rescuer', 'Researcher', 'Enthusiast'];
@@ -56,10 +57,10 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
             Navigator.pushReplacementNamed(context, '/userSnakesList');
           });
         } else {
-          // TODO handle new user registration error
+          _serverErr = "Server Error. Please try again after sometime";
         }
       }, onError: (err) {
-        print('error checking first user');
+        _serverErr = "Server Error. Please try again after sometime";
       });
     }
   }

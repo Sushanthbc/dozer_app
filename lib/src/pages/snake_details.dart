@@ -59,10 +59,8 @@ class RescueDetailState extends State<RescueDetail> {
   Future<SnakeInfo> _getRescueDetail() async {
     final response =
     await http.get(globals.baseURL + 'api/snake_charms/' + widget.id);
-    print(response.body.toString());
     if (response.statusCode == 200) {
       // If server returns an OK response, parse the JSON
-      print(response.body.toString());
       var resp = json.decode(response.body.toString());
       snakeInfo = SnakeInfo.fromMap(resp);
       return snakeInfo;

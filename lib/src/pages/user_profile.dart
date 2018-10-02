@@ -44,7 +44,6 @@ class UserProfileFormState extends State<UserProfileForm> {
     if (response.statusCode == 200) {
       // If server returns an OK response, parse the JSON
       var resp = json.decode(response.body.toString());
-      print(resp);
       _userInfo = AppUserInfo.fromMap(resp["user"]);
       return _userInfo;
     } else {
@@ -62,14 +61,12 @@ class UserProfileFormState extends State<UserProfileForm> {
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save();
       Map _newUserReq = _userInfo.toMap();
-      print(jsonEncode(_newUserReq));
       http.patch(globals.baseURL + "api/users/" + globals.loggedInUserId.toString(),
           body: jsonEncode(_newUserReq),
           headers: {
             "accept": "application/json",
             "content-type": "application/json"
           }).then((response) {
-            print(response.body.toString());
         if (response.statusCode == 200) {
           Scaffold.of(context).showSnackBar(
               SnackBar(
