@@ -10,12 +10,16 @@ class SnakeInfo {
   String snakeColor;
   String snakeBehavior;
   String snakeCondition;
+  String cntBands;
   String dividedSubCaudals;
   String undividedSubCaudals;
 
   String rescueDateTime;
   DateTime rescueDate;
   TimeOfDay rescueTime;
+
+  String userId;
+  String rescuedBy;
 
   String callerName;
   String callerPhone;
@@ -30,9 +34,15 @@ class SnakeInfo {
   String macroHabitat;
   String microHabitat;
 
+  String generalRemarks;
+  String biteReport;
+
   List<File> images;
+  List snakePhotos;
   List<Map> imagesInfo;
   File image;
+
+  Map rescuerDetail;
 
 
   SnakeInfo({
@@ -44,6 +54,7 @@ class SnakeInfo {
     this.snakeColor,
     this.snakeBehavior,
     this.snakeCondition,
+    this.cntBands,
     this.dividedSubCaudals,
     this.undividedSubCaudals,
     this.callerName,
@@ -63,7 +74,13 @@ class SnakeInfo {
     this.elevationUnit,
     this.image,
     this.images,
-    this.imagesInfo
+    this.imagesInfo,
+    this.snakePhotos,
+    this.generalRemarks,
+    this.biteReport,
+    this.rescuedBy,
+    this.userId,
+    this.rescuerDetail
   });
 
   Map<String, dynamic> toMap() {
@@ -82,7 +99,9 @@ class SnakeInfo {
     map['caller_phone'] = callerPhone;
     map['snake_length'] = double.parse(snakeLength);
     map['snake_length_unit'] = snakeLengthUnit;
-    map['snake_weight'] = double.parse(snakeWeight);
+    if (snakeWeight !=  null && snakeWeight !=  "") {
+      map['snake_weight'] = double.parse(snakeWeight);
+    }
     map['snake_weight_unit'] = snakeWeightUnit;
     map['snake_sex'] = snakeSex;
     map['snake_color'] = snakeColor;
@@ -90,16 +109,120 @@ class SnakeInfo {
     map['snake_micro_habitat'] = microHabitat;
     map['snake_macro_habitat'] = macroHabitat;
     map['snake_condition'] = snakeCondition;
-    map['subcaudals'] = "D:" + dividedSubCaudals + ";" + "U:" + undividedSubCaudals;
+    map['snake_caudals'] = "D:" + dividedSubCaudals + ";" + "U:" + undividedSubCaudals;
     map['release_date'] = null;
-    map['user_id'] = 1;
+    map['user_id'] = globals.loggedInUserId;
+    if (latitude != null){
+      map['latitude'] = latitude;
+    }
+    if (longitude != null){
+      map['longitude'] = longitude;
+    }
+    if (elevation != null){
+      map['elevation'] = elevation;
+      map['elevation_unit'] = elevationUnit;
+    }
+    if (generalRemarks != null){
+      map['general_remarks'] = generalRemarks;
+    }
+    if (biteReport != null){
+      map['bite_report'] = biteReport;
+    }
+    if (cntBands != ""){
+      map['number_of_bands'] = cntBands;
+    }
     return map;
   }
 
   SnakeInfo.fromMap(Map<String, dynamic> map) {
     this.id = map['id'];
+    this.rescueDateTime= map["rescue_date_time"];
+    this.rescueDate = DateTime.parse(map["rescue_date_time"]);
+    this.rescueTime = TimeOfDay.fromDateTime(DateTime.parse(map["rescue_date_time"]));
     this.callerName = map['caller_name'];
     this.callerPhone = map['caller_phone'];
+    this.snakeLength = map["snake_length"].toString();
+    this.snakeLengthUnit = map["snake_length_unit"];
+    this.snakeColor = map["snake_color"];
+    this.snakeSex = map["snake_sex"];
+
+    if (map["snake_weight"].toString() == "null"){
+      this.snakeWeight = "";
+    } else {
+      this.snakeWeight = map["snake_weight"].toString();
+    }
+    this.snakeWeightUnit = map["snake_weight_unit"];
+
+    //this.dividedSubCaudals= map["snake_caudals"]["divided"];
+    //this.undividedSubCaudals= map["snake_caudals"]["undivided"];
+
+    if (map["snake_caudals"]!="D:;U:"){
+      List<String> _caudals = map["snake_caudals"].toString().split(";");
+      String _dividedCaudals = _caudals[0].split(":")[1];
+      String _undividedCaudals = _caudals[1].split(":")[1];
+      this.dividedSubCaudals = _dividedCaudals;
+      this.undividedSubCaudals = _undividedCaudals;
+    } else {
+      this.dividedSubCaudals = "";
+      this.undividedSubCaudals = "";
+    }
+
+    if (map["number_of_bands"] != null){
+      this.cntBands = map["number_of_bands"].toString();
+    } else {
+      this.cntBands = "";
+    }
+
+    if (map['latitude'] != null){
+      this.latitude = map['latitude'];
+    } else {
+      this.latitude = "";
+    }
+    if (map['longitude'] != null){
+      this.longitude = map['longitude'];
+    } else {
+      this.longitude = "";
+    }
+    if (map['elevation'] != null){
+      this.elevation = map['elevation'];
+      this.elevationUnit = map['elevation_unit'];
+    } else {
+      this.elevation = "";
+      this.elevationUnit = "Feet";
+    }
+    if (map['general_remarks'] != null){
+      this.generalRemarks = map['general_remarks'];
+    }
+    if (map['bite_report'] != null){
+      this.biteReport = map['bite_report'];
+    }
+
+    this.snakeCondition= map["snake_condition"];
+    this.snakeBehavior = map["snake_behavior"];
+    this.callerName= map["caller_name"];
+    this.callerPhone= map["caller_phone"].toString();
+    this.address= map["address"];
+    this.village= map["village"];
+    this.pincode= map["pincode"];
+    this.macroHabitat= map["snake_macro_habitat"];
+    this.microHabitat= map["snake_micro_habitat"];
+    this.images = [];
+
+    this.userId = map["user_id"].toString();
+    if (map["created_by"] != null){
+      this.rescuedBy = map["created_by"];
+    }
+
+    if (map["user_detail"] != null){
+      this.rescuerDetail = map["user_detail"][0];
+    }
+    
+    // Photo links
+    if (map["snake_photos"].length > 0) {
+      this.snakePhotos = map["snake_photos"];
+    } else {
+      this.snakePhotos = [];
+    }
   }
 
   static http.MultipartRequest getMultiPartFields(multipartRequest, SnakeInfo formData) {
@@ -108,7 +231,7 @@ class SnakeInfo {
         formData.rescueDate.day,
         formData.rescueTime.hour, formData.rescueTime.minute
     ).toString();
-    multipartRequest.fields['snake_charm[user_id]'] = '1';
+    multipartRequest.fields['snake_charm[user_id]'] = globals.loggedInUserId.toString();
     multipartRequest.fields['snake_charm[caller_name]'] = formData.callerName;
     multipartRequest.fields['snake_charm[caller_phone]'] =
         formData.callerPhone.toString();
@@ -132,13 +255,36 @@ class SnakeInfo {
     multipartRequest.fields['snake_charm[snake_condition]'] =
         formData.snakeCondition;
     multipartRequest.fields['snake_charm[snake_color]'] = formData.snakeColor;
-    for (int i=0; i<formData.imagesInfo.length; i++){
+    multipartRequest.fields['snake_charm[snake_caudals]'] =
+        "D:" + formData.dividedSubCaudals + ";" + "U:" + formData.undividedSubCaudals;
+
+    if (formData.latitude != null){
+      multipartRequest.fields['snake_charm[latitude]'] = formData.latitude;
+    }
+    if (formData.longitude != null){
+      multipartRequest.fields['snake_charm[longitude]'] = formData.longitude;
+    }
+    if (formData.elevation != null){
+      multipartRequest.fields['snake_charm[elevation]'] = formData.elevation;
+      multipartRequest.fields['snake_charm[elevation_unit]'] = formData.elevationUnit;
+    }
+    if (formData.generalRemarks != null){
+      multipartRequest.fields['snake_charm[general_remarks]'] = formData.generalRemarks;
+    }
+    if (formData.biteReport != null){
+      multipartRequest.fields['snake_charm[bite_report]'] = formData.biteReport;
+    }
+    if (formData.cntBands != ""){
+      multipartRequest.fields['snake_charm[number_of_bands]'] = formData.cntBands;
+    }
+
+    /*for (int i=0; i<formData.imagesInfo.length; i++){
       print('snake_charm[snake_photo_'+ i.toString() +']');
       print('snake_photo_' + i.toString());
       print(formData.imagesInfo[i]['snake_photo_' + i.toString()]);
       multipartRequest.fields['snake_charm[snake_photo_'+ i.toString() +']'] =
          formData.imagesInfo[i]['snake_photo_' + i.toString()].toString();
-    }
+    }*/
     return multipartRequest;
   }
 

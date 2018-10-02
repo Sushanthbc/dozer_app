@@ -25,7 +25,7 @@ class UsersListView extends StatefulWidget{
 class UsersListViewState extends State<UsersListView>{
 
   Future<List<AppUserInfo>> _getAppUsersList() async {
-    final response = await http.get('https://morning-castle-37512.herokuapp.com/api/users');
+    final response = await http.get(globals.baseURL + 'api/users');
     var responseJson = json.decode(response.body.toString());
     List<AppUserInfo> usersList = _createUserList(responseJson["users"]);
     return usersList;
@@ -41,11 +41,11 @@ class UsersListViewState extends State<UsersListView>{
   }
 
   IconData _getIconForAboutUser(String aboutUser){
-    if (aboutUser == 'rescuer'){
-      return Icons.brush;
-    } else if (aboutUser == 'researcher'){
-      return Icons.school;
-    } else if (aboutUser == 'enthusiast'){
+    if (aboutUser.toLowerCase() == 'rescuer'){
+      return Icons.gesture;
+    } else if (aboutUser.toLowerCase() == 'researcher'){
+      return Icons.content_paste;
+    } else if (aboutUser.toLowerCase() == 'enthusiast'){
       return Icons.camera_alt;
     }
   }
@@ -66,15 +66,25 @@ class UsersListViewState extends State<UsersListView>{
                   children: <Widget>[
                     ListTile(
                       leading: Icon(_getIconForAboutUser(snapshot.data[index].aboutUser)),
-                      title: Text(snapshot.data[index].firstName + ' ' + snapshot.data[index].lastName),
-                      subtitle: new Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      title: Text(
+                        snapshot.data[index].firstName + ' ' + snapshot.data[index].lastName,
+                        style: Theme.of(context).textTheme.title,
 
-                        children: <Widget>[
-                          Text(snapshot.data[index].emailID),
-                          Text(snapshot.data[index].phone)
-                        ],
                       ),
+                      subtitle: globals.isUserAdmin == true
+                      ? new Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            new Container(
+                              child: Text(snapshot.data[index].emailID),
+                              margin: EdgeInsets.only(top:5.0, bottom: 5.0),
+                            ),
+                            Text(snapshot.data[index].phone)
+                          ],
+                        )
+                      : new Container(
+                          child: Text(snapshot.data[index].aboutUser),
+                        )
                     ),
                     Divider(color: Colors.grey)
                   ],
@@ -99,7 +109,15 @@ class UsersListViewState extends State<UsersListView>{
 
         } else {
 
-          return CircularProgressIndicator();
+          return new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[new CircularProgressIndicator()],
+              )
+            ],
+          );
 
         }
 

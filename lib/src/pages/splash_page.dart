@@ -16,18 +16,52 @@ class _SplashPageState extends State<SplashPage> {
     new Timer(const Duration(seconds: 2), () {
       // Listen for our auth event (on reload or start)
       // Go to our /todos page once logged in
-      _auth.onAuthStateChanged.firstWhere((user) => user != null).then((user) {
-        print('From Firebase');
-        print(user);
-        _newUserInfo = new AppUserInfo();
-        _newUserInfo.firstName = user.displayName;
-        _newUserInfo.phone = user.phoneNumber;
-        _newUserInfo.emailID = user.email;
-        isNewUser = true;
-        setState(() {
+      _auth.onAuthStateChanged.firstWhere((user) => user != null).then(
 
-        });
-        //Navigator.pushNamed(context, '/snakesList');
+        (user) {
+          var checkUserReq = {
+            "user" : {
+              "email_id" : user.email
+            }
+          };
+          http.post(
+            globals.baseURL + "api/users/account_check",
+            body: jsonEncode(checkUserReq),
+            headers: {
+              "accept": "application/json",
+              "content-type": "application/json"
+            }
+          ).then((response){
+            var resp = jsonDecode(response.body.toString());
+
+            if (resp["user"] == false) {
+
+              List<String> displayName = user.displayName.split(" ");
+              _newUserInfo = new AppUserInfo();
+              _newUserInfo.firstName = displayName[0];
+              _newUserInfo.lastName = displayName[1];
+              _newUserInfo.phone = user.phoneNumber;
+              _newUserInfo.emailID = user.email;
+              _newUserInfo.aboutUser = "Rescuer";
+              isNewUser = true;
+              setState(() {
+              });
+
+            } else {
+              SharedPref.setUserIdPref(resp["user"]["id"], resp["user"]["admin"]);
+              SharedPref.getUserDetails().then((userDetails) {
+                globals.loggedInUserId = resp["user"]["id"];
+                globals.isUserAdmin = resp["user"]["admin"];
+               Navigator.pushReplacementNamed(context, '/userSnakesList');
+              });
+
+            }
+          }, onError: (err){
+            Scaffold.of(context).showSnackBar(
+              SnackBar(content: Text("Server error! Please try after sometime."))
+            );
+          });
+
       });
 
       // Give the navigation animations, etc, some time to finish
@@ -48,33 +82,58 @@ class _SplashPageState extends State<SplashPage> {
   Widget _checkNewUser(isNewUser) {
     if (!isNewUser) {
       return new Container(
-        decoration: new BoxDecoration(
-          image: new DecorationImage(
-              image: new AssetImage("assets/images/KC.jpg"),
-              fit: BoxFit.fitHeight,
-              alignment: Alignment.center),
-        ),
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            new SizedBox(height: 180.0),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                new CircularProgressIndicator(),
-              ],
+          constraints: new BoxConstraints.expand(
+            height: double.infinity,
+          ),
+          padding: new EdgeInsets.only(left: 16.0, bottom: 8.0, right: 16.0),
+          decoration: new BoxDecoration(
+            image: new DecorationImage(
+              image: new AssetImage('assets/images/splash_kc.jpg'),
+              fit: BoxFit.cover,
             ),
-            new SizedBox(height: 20.0),
-            new Text(
-              "Please wait...",
-              style: new TextStyle(color: Colors.white),
-            ),
-          ],
-        ),
+          ),
+          child: new Stack(
+            children: <Widget>[
+              new Align(
+                alignment: Alignment.topCenter,
+                child: new Padding(
+                  padding: EdgeInsets.only(top:30.0),
+                  child: new Text('Kalinga',
+                    style: new TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30.0,
+                        color: Colors.white
+                    ),
+                  )
+                ),
+              ),
+              new Positioned(
+                left: 170.0,
+                top: 80.0,
+                child: new Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    new CircularProgressIndicator(),
+                  ],
+                ),
+              ),
+              new Positioned(
+                right: 10.0,
+                bottom: 50.0,
+                child: new Image.asset(
+                  "assets/images/KF_Logo.jpg",
+                  fit: BoxFit.contain,
+                  height: 100.0,
+                ),
+              ),
+            ],
+          )
       );
     } else {
       return UserRegistrationForm(userInfo: _newUserInfo);
     }
   }
+
 }

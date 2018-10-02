@@ -12,15 +12,17 @@ class DrawerMain{
           DrawerHeader(
 
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Colors.white,
             ),
 
-            child: Text(
-              'Kalinga Foundation',
-              style: new TextStyle(
-                  color: Colors.white
-              ),
-            ),
+            child: Image.asset("assets/images/KF_Logo.jpg"),
+
+//            child: Text(
+//              'Menu',
+//              style: new TextStyle(
+//                  color: Colors.white
+//              ),
+//            ),
 
           ),
 
@@ -28,17 +30,27 @@ class DrawerMain{
             leading: Icon(Icons.list),
             title: Text('My Records'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/snakesList');
+              Navigator.pushReplacementNamed(context, '/userSnakesList');
               //Navigator.pop(context);
             },
           ),
+
+          globals.isUserAdmin == true
+          ? ListTile(
+              leading: Icon(Icons.view_list),
+              title: Text('All Records'),
+              onTap: () {
+                Navigator.pushReplacementNamed(context, '/adminSnakesList');
+                //Navigator.pop(context);
+              },
+            )
+          : Container(),
 
           ListTile(
             leading: Icon(Icons.person),
             title: Text('My Profile'),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/usersList');
+              Navigator.pushReplacementNamed(context, '/userProfile');
               //
             },
           ),
@@ -53,9 +65,18 @@ class DrawerMain{
           ),
 
           ListTile(
-            leading: Icon(Icons.arrow_back),
-            title: Text('Sign Out'),
+            leading: Icon(Icons.phone),
+            title: Text('Contact Us'),
+            onTap: (){
+              Navigator.pop(context);
+              Navigator.pushReplacementNamed(context, '/contactUs');
+            },
           )
+
+//          ListTile(
+//            leading: Icon(Icons.arrow_back),
+//            title: Text('Sign Out'),
+//          )
 
 
         ],

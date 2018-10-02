@@ -13,108 +13,143 @@ part of dozer;
 //  }
 //}
 
-
-class UserRegistrationForm extends StatefulWidget{
+class UserRegistrationForm extends StatefulWidget {
   final AppUserInfo userInfo;
+
   UserRegistrationForm({Key key, this.userInfo}) : super(key: key);
+
   @override
-  UserRegistrationFormState createState(){
+  UserRegistrationFormState createState() {
     return UserRegistrationFormState();
   }
 }
 
-
-class UserRegistrationFormState extends State<UserRegistrationForm>{
-
+class UserRegistrationFormState extends State<UserRegistrationForm> {
   final _formKey = GlobalKey<FormState>();
+  String _serverErr;
 
   //TODO: We have to move away from dropdown to something else
-  List<String> _aboutList = ['Rescuer','Researcher','Enthusiast'];
-
+  List<String> _aboutList = ['Rescuer', 'Researcher', 'Enthusiast'];
 
   //UserInfo _userInfo;
 
   void submit() {
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save();
+      Map _newUserReq = widget.userInfo.toMap();
+      http.post(globals.baseURL +  "api/users",
+          body: jsonEncode(_newUserReq),
+          headers: {
+            "accept": "application/json",
+            "content-type": "application/json"
+          }).then((response) {
+        if (response.statusCode == 200) {
+          var resp = jsonDecode(response.body.toString());
+          SharedPref.setUserIdPref(resp["user"]["id"], resp["user"]["admin"]);
+          SharedPref.getUserDetails().then((userDetails) {
+            if (userDetails["userId"] == null){
+              globals.loggedInUserId = resp["user"]["id"];
+              globals.isUserAdmin = resp["user"]["admin"];
+            } else {
+              globals.loggedInUserId = userDetails["userId"];
+              globals.isUserAdmin = userDetails["isAdmin"];
+            }
+            Navigator.pushReplacementNamed(context, '/userSnakesList');
+          });
+        } else {
+          _serverErr = "Server Error. Please try again after sometime";
+        }
+      }, onError: (err) {
+        _serverErr = "Server Error. Please try again after sometime";
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Form(
-        key: _formKey,
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                new Text(
-                  'Kalinga Foundation',
-                  style: new TextStyle(
-                      fontSize: 20.0
-                  ),
-                )
-              ],
-            ),
-
-            new Padding(
-              padding: EdgeInsets.all(20.0),
-              child: new Column(
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(top: 80.0),
+      child: new Form(
+          key: _formKey,
+          child: new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-
-                  new ListTile(
-                    leading: new Icon(Icons.person),
-                    title: new TextFormField(
-                      initialValue: widget.userInfo.firstName,
-                      decoration: new InputDecoration(
-                          labelText: 'Name'
-                      ),
-                      onSaved: (value){
-                        widget.userInfo.firstName = value;
-                      },
+                  new Text(
+                    'Kalinga Foundation',
+                    style: new TextStyle(fontSize: 20.0),
+                  )
+                ],
+              ),
+              new Padding(
+                padding: EdgeInsets.all(20.0),
+                child: new Column(
+                  children: <Widget>[
+                    new ListTile(
+                      leading: new Icon(Icons.person),
+                      title: new TextFormField(
+                          initialValue: widget.userInfo.firstName,
+                          decoration:
+                          new InputDecoration(labelText: 'First Name'),
+                          onSaved: (value) {
+                            widget.userInfo.firstName = value;
+                          },
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Required';
+                            }
+                          }),
                     ),
-                  ),
-
-                  new ListTile(
-                    leading: new Icon(Icons.phone),
-                    title: new TextFormField(
-                      initialValue: widget.userInfo.phone,
-                      keyboardType: TextInputType.phone,
-                      decoration: new InputDecoration(
-                          labelText: 'Phone'
-                      ),
-                      onSaved: (value){
-                        widget.userInfo.phone = value;
-                      },
+                    new ListTile(
+                      leading: new Icon(Icons.person),
+                      title: new TextFormField(
+                          initialValue: widget.userInfo.lastName,
+                          decoration:
+                          new InputDecoration(labelText: 'Last Name'),
+                          onSaved: (value) {
+                            widget.userInfo.lastName = value;
+                          },
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Required';
+                            }
+                          }),
                     ),
-                  ),
-
-                  new ListTile(
-                    leading: new Icon(Icons.email),
-                    title: new TextFormField(
-                      enabled: false,
-                      initialValue: widget.userInfo.emailID,
-                      decoration: new InputDecoration(
-                        labelText: 'Email'
-                      ),
-                      onSaved: (value){
-                        widget.userInfo.emailID = value;
-                      },
+                    new ListTile(
+                      leading: new Icon(Icons.phone),
+                      title: new TextFormField(
+                          initialValue: widget.userInfo.phone,
+                          keyboardType: TextInputType.phone,
+                          decoration: new InputDecoration(labelText: 'Phone'),
+                          onSaved: (value) {
+                            widget.userInfo.phone = value;
+                          },
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Required';
+                            }
+                          }),
                     ),
-                  ),
-
-                  new ListTile(
-                    leading: new Icon(Icons.work),
-                    title: new InputDecorator(
-                      decoration: new InputDecoration(
-                          labelText: "About Me"
+                    new ListTile(
+                      leading: new Icon(Icons.email),
+                      title: new TextFormField(
+                        enabled: false,
+                        initialValue: widget.userInfo.emailID,
+                        decoration: new InputDecoration(labelText: 'Email'),
+                        onSaved: (value) {
+                          widget.userInfo.emailID = value;
+                        },
                       ),
-                      child: new DropdownButtonHideUnderline(
-                          child: new DropdownButton<String>(
+                    ),
+                    new ListTile(
+                      leading: new Icon(Icons.work),
+                      title: new InputDecorator(
+                        decoration: new InputDecoration(labelText: "About Me"),
+                        child: new DropdownButtonHideUnderline(
+                            child: new DropdownButton<String>(
                               value: widget.userInfo.aboutUser,
                               isDense: true,
                               onChanged: (String newValue) {
@@ -127,50 +162,44 @@ class UserRegistrationFormState extends State<UserRegistrationForm>{
                                   value: value,
                                   child: new Text(value),
                                 );
-                              }
-                              ).toList()
-                          )
+                              }).toList(),
+                            )),
                       ),
                     ),
-                  ),
-
-                  new ListTile(
-                    leading: new Icon(Icons.description),
-                    title: new TextFormField(
-                      maxLines: 4,
-                      keyboardType: TextInputType.multiline,
-                      decoration: new InputDecoration(
-                        labelText: 'Purpose',
-                        hintText: 'I rescue King Cobras and \nwould like share my data \nfor research.'
-                      ),
-                      onSaved: (value){
-                        widget.userInfo.purpose = value;
-                      },
+                    new ListTile(
+                      leading: new Icon(Icons.description),
+                      title: new TextFormField(
+                          maxLines: 4,
+                          keyboardType: TextInputType.multiline,
+                          decoration: new InputDecoration(
+                              labelText: 'Purpose',
+                              hintText:
+                              'eg: I rescue King Cobras and \nwould like share my data \nfor research.'),
+                          onSaved: (value) {
+                            widget.userInfo.purpose = value;
+                          },
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Required';
+                            }
+                          }),
                     ),
-                  ),
-
-
-                  new Padding(
-                    padding: EdgeInsets.only(top: 20.0),
-                    child: new RaisedButton(
-                      onPressed: this.submit,
-                      color: Colors.blue,
-                      child: new Text(
-                        'Submit',
-                        style: new TextStyle(
-                            color: Colors.white
+                    new Padding(
+                      padding: EdgeInsets.only(top: 20.0,bottom: 30.0),
+                      child: new RaisedButton(
+                        onPressed: this.submit,
+                        color: Colors.blue,
+                        child: new Text(
+                          'Submit',
+                          style: new TextStyle(color: Colors.white),
                         ),
                       ),
-                    ),
-                  )
-
-                ],
-              ),
-            )
-
-          ],
-        )
+                    )
+                  ],
+                ),
+              )
+            ],
+          )),
     );
-
   }
 }

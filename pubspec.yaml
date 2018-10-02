@@ -9,6 +9,8 @@ dependencies:
   date_format: 1.0.5
   serializable: 0.11.0+1
   http: 0.11.3+17
+  shared_preferences: 0.4.2
+  url_launcher: 3.0.3
 
   firebase_auth: 0.5.19
   google_sign_in: 3.0.5
@@ -23,4 +25,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+  fonts:
+    - family: CustomIcons
+      fonts:
+        - asset: assets/fonts/FacebookIcon.ttf
 
