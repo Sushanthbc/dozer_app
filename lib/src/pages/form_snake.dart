@@ -903,6 +903,15 @@ class NewRescueFormState extends State<NewRescueForm> {
                         onSaved: (val){
                           _formData.cntBands = val;
                         },
+                        validator: (value){
+                          if (value != "" &&
+                              int.parse(value) < 10) {
+                            return "Min : 10";
+                          } else if (value != "" &&
+                              int.parse(value) > 100) {
+                            return "Max : 100";
+                          }
+                        },
                       ),
                     ),
 
@@ -1059,7 +1068,10 @@ class NewRescueFormState extends State<NewRescueForm> {
                     _formData.snakePhotos.length > 0
                         ? new GridView.count(
                             shrinkWrap: true,
+                            primary: false,
                             crossAxisCount: 3,
+                            mainAxisSpacing: 1.0,
+                            crossAxisSpacing: 1.0,
                             children: List.generate(
                                 snakeInfo.snakePhotos.length, (index) {
                               return Center(
@@ -1079,7 +1091,7 @@ class NewRescueFormState extends State<NewRescueForm> {
                                     },
                                     child: new Image.network(
                                       snakeInfo.snakePhotos[index],
-                                      fit: BoxFit.contain,
+                                      height: 90.0,
                                     ),
                                   ),
                                 ],
@@ -1101,14 +1113,19 @@ class NewRescueFormState extends State<NewRescueForm> {
                     _formData.images.length > 0
                         ? new GridView.count(
                             shrinkWrap: true,
+                            primary: false,
                             crossAxisCount: 3,
+                            mainAxisSpacing: 1.0,
+                            crossAxisSpacing: 1.0,
                             children: List.generate(
                                 _formData.images.length, (index) {
                               return Center(
                                   child: new Column(
                                 children: <Widget>[
                                   new Image.file(
-                                      _formData.images[index]),
+                                      _formData.images[index],
+                                    height: 90.0,
+                                  ),
                                   //new Text(_formData.imagesInfo[index]['image'])
                                 ],
                               ));

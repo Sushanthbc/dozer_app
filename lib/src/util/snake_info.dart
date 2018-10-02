@@ -111,7 +111,11 @@ class SnakeInfo {
     map['snake_condition'] = snakeCondition;
     map['snake_caudals'] = "D:" + dividedSubCaudals + ";" + "U:" + undividedSubCaudals;
     map['release_date'] = null;
-    map['user_id'] = globals.loggedInUserId;
+    if (userId == null){
+      map['user_id'] = globals.loggedInUserId;
+    } else {
+      map['user_id'] = userId;
+    }
     if (latitude != null){
       map['latitude'] = latitude;
     }
