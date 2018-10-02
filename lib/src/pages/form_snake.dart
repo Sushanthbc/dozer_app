@@ -47,7 +47,13 @@ class NewRescueFormState extends State<NewRescueForm> {
   // Image picker
   Future getImage() async {
     File image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    final Map result = await Navigator.push(
+    if (image != null) {
+      setState(() {
+        _formData.images.add(image);
+      });
+    }
+    // Below code for photo tags
+    /*final Map result = await Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => SnakeImageInfo(snakePhoto: image)),
@@ -57,7 +63,7 @@ class NewRescueFormState extends State<NewRescueForm> {
       _formData.images.add(image);
       _formData.imagesInfo
           .add({imagePath[imagePath.length - 1]: result});
-    });
+    });*/
   }
 
   List<String> _macroHabitats = <String>[
@@ -1073,6 +1079,7 @@ class NewRescueFormState extends State<NewRescueForm> {
                                     },
                                     child: new Image.network(
                                       snakeInfo.snakePhotos[index],
+                                      fit: BoxFit.contain,
                                     ),
                                   ),
                                 ],

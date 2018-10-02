@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'globals.dart' as globals;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/widgets.dart';
 
 
 part 'util/image_info.dart';
@@ -21,6 +22,7 @@ part 'util/snake_info.dart';
 part 'util/drawer_main.dart';
 part 'util/app_user_info.dart';
 part 'util/shared_preferences.dart';
+part 'util/custom_icons.dart';
 
 part 'pages/splash_page.dart';
 part 'pages/form_snake.dart';

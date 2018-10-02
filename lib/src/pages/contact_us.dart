@@ -11,60 +11,74 @@ class ContactUs extends StatelessWidget{
         title: Text("Contact Us"),
       ),
       body: new Padding(
-          padding: EdgeInsets.only(left:5.0, top:20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
+          padding: EdgeInsets.all(0.0),
+          child: Card(
+            elevation: 3.0,
+            margin: EdgeInsets.only(top:30.0, left:10.0, right:10.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
 
-              ListTile(
-                leading: IconButton(
-                    icon: Icon(Icons.phone, color: Colors.blue),
-                    onPressed: (){
-                      launch("tel:+919480877670");
-                    },
+                SizedBox(height:10.0),
+
+                Container(
+                  height: 150.0,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/KF_Logo.jpg'),
+                      fit: BoxFit.fitHeight,
+                    ),
+                  )
                 ),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    //Text("Phone"),
-                    Text("+91 9480877670"),
-                  ],
-                )
-              ),
 
-              ListTile(
-                  leading: IconButton(
-                    icon: Icon(Icons.mail, color: Colors.blue),
-                    onPressed: (){
-                      launch("mailto:ophiohannah2018@gmail.com?subject=App Query:");
-                    },
-                  ),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      //Text("Email"),
-                      Text("ophiohannah2018@gmail.com"),
-                    ],
-                  )
-              ),
+                SizedBox(height:20.0),
+                
+                ListTile(
+                    leading: IconButton(
+                      icon: Icon(Icons.phone, color: Colors.blue),
+                      onPressed: (){
+                        launch("tel:+919480877670");
+                      },
+                    ),
+                    title: Text("+91 94808 77670"),
+                    subtitle: Text("MOBILE"),
 
-              ListTile(
-                  leading: IconButton(
-                    icon: Icon(Icons.public, color: Colors.blue),
-                    onPressed: (){
-                      launch("https://kalingacre.com/");
-                    },
-                  ),
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      //Text("Website"),
-                      Text("kalingacre.com/"),
-                    ],
-                  )
-              ),
+                ),
 
-            ],
+                ListTile(
+                    leading: IconButton(
+                      icon: Icon(Icons.mail, color: Colors.blue),
+                      onPressed: (){
+                        launch("mailto:ophiohannah2018@gmail.com?subject=App Query:");
+                      },
+                    ),
+                    title: Text("ophiohannah2018@gmail.com"),
+                    subtitle: Text("EMAIL")
+                ),
+
+                ListTile(
+                    leading: IconButton(
+                      icon: Icon(CustomIcons.facebook_1, color: Color.fromRGBO(59, 89, 152, 1.0)),
+                      onPressed: (){
+                        launch("https://www.facebook.com/KaalingaCRE");
+                      },
+                    ),
+                    title: Text("https://www.facebook.com/KaalingaCRE"),
+                    subtitle: Text("FACEBOOK"),
+                ),
+
+                ListTile(
+                    leading: IconButton(
+                      icon: Icon(Icons.public, color: Colors.blue),
+                      onPressed: (){
+                        launch("http://kalingacre.com/");
+                      },
+                    ),
+                    title: Text("http://kalingacre.com/"),
+                    subtitle: Text("WEBSITE"),
+                ),
+              ],
+            ),
           ),
       ),
     );

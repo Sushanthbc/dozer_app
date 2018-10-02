@@ -282,30 +282,10 @@ class SnakesListViewState extends State<SnakesListView> {
                             children: <Widget>[
                               new Padding(
                                 padding: EdgeInsets.all(10.0),
-                                child: new Text(DateTime.parse(
-                                    snapshot.data[index].rescueDateTime)
-                                    .day
-                                    .toString() +
-                                    '-' +
-                                    DateTime.parse(
-                                        snapshot.data[index].rescueDateTime)
-                                        .month
-                                        .toString() +
-                                    '-' +
-                                    DateTime.parse(
-                                        snapshot.data[index].rescueDateTime)
-                                        .year
-                                        .toString() +
-                                    ' ' +
-                                    DateTime.parse(
-                                        snapshot.data[index].rescueDateTime)
-                                        .hour
-                                        .toString() +
-                                    ':' +
-                                    DateTime.parse(
-                                        snapshot.data[index].rescueDateTime)
-                                        .minute
-                                        .toString()),
+                                child: new Text(
+                                    formatDate(DateTime.parse(snapshot.data[index].rescueDateTime),
+                                        [dd, '-', mm, '-', yyyy, ' ', HH, ':', nn])
+                                ),
                               )
                             ],
                           )

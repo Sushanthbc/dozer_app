@@ -99,30 +99,8 @@ class RescueDetailState extends State<RescueDetail> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text("Rescue Date"),
-                        Text(DateTime.parse(
-                            snakeInfo.rescueDateTime)
-                            .day
-                            .toString() +
-                            '-' +
-                            DateTime.parse(
-                                snakeInfo.rescueDateTime)
-                                .month
-                                .toString() +
-                            '-' +
-                            DateTime.parse(
-                                snakeInfo.rescueDateTime)
-                                .year
-                                .toString() +
-                            ' ' +
-                            DateTime.parse(
-                                snakeInfo.rescueDateTime)
-                                .hour
-                                .toString() +
-                            ':' +
-                            DateTime.parse(
-                                snakeInfo.rescueDateTime)
-                                .minute
-                                .toString())
+                        Text(formatDate(DateTime.parse(snakeInfo.rescueDateTime),
+                            [dd, '-', mm, '-', yyyy, ' ', HH, ':', nn]))
                       ],
                     )
 
