@@ -20,6 +20,7 @@ class NewRescueFormState extends State<NewRescueForm> {
 
   String httpAction;
   SnakeInfo _formData;
+  bool _autoValidate = false;
   bool _formErr = false;
   bool _serverErr = false;
   
@@ -236,6 +237,7 @@ class NewRescueFormState extends State<NewRescueForm> {
       setState(() {
         httpInProgress = false;
         _formErr = true;
+        _autoValidate = true;
       });
     }
   }
@@ -293,6 +295,7 @@ class NewRescueFormState extends State<NewRescueForm> {
           : SingleChildScrollView(
             child: Form(
                 key: _formKey,
+                autovalidate: _autoValidate,
                 child: Column(
                   children: <Widget>[
 
@@ -365,6 +368,8 @@ class NewRescueFormState extends State<NewRescueForm> {
                           validator: (value) {
                             if (value == ""){
                               return "Required.";
+                            } else if (value.length < 2){
+                              return 'Name must be more than 2 characters';
                             }
                           },
                         )),
@@ -382,6 +387,12 @@ class NewRescueFormState extends State<NewRescueForm> {
                           validator: (value) {
                             if (value == ""){
                               return "Required.";
+                            } else if (value.length < 8) {
+                              return 'Min : 8 digits';
+                            } else if (value.length > 13) {
+                              return 'Max : 13 digits';
+                            } else {
+                              return null;
                             }
                           },
                         )),
@@ -397,6 +408,8 @@ class NewRescueFormState extends State<NewRescueForm> {
                         validator: (value) {
                           if (value == ""){
                             return "Required.";
+                          } else if (value.length < 2){
+                            return 'Address must be more than 2 characters';
                           }
                         },
                       ),
@@ -414,6 +427,12 @@ class NewRescueFormState extends State<NewRescueForm> {
                         validator: (value) {
                           if (value == ""){
                             return "Required.";
+                          } else if (value.length < 5) {
+                            return 'Min : 5 digits';
+                          } else if (value.length > 7) {
+                            return 'Max : 7 digits';
+                          } else {
+                            return null;
                           }
                         },
                       ),
@@ -430,6 +449,8 @@ class NewRescueFormState extends State<NewRescueForm> {
                         validator: (value) {
                           if (value == ""){
                             return "Required.";
+                          } else if (value.length < 3){
+                            return 'Min : 3 characters';
                           }
                         },
                       ),

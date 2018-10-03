@@ -26,7 +26,9 @@ class UserRegistrationForm extends StatefulWidget {
 
 class UserRegistrationFormState extends State<UserRegistrationForm> {
   final _formKey = GlobalKey<FormState>();
-  String _serverErr;
+  bool _autoValidate = false;
+  bool httpLoading = false;
+  String _serverErr = "";
 
   //TODO: We have to move away from dropdown to something else
   List<String> _aboutList = ['Rescuer', 'Researcher', 'Enthusiast'];
@@ -34,6 +36,9 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
   //UserInfo _userInfo;
 
   void submit() {
+    setState(() {
+      httpLoading = true;
+    });
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save();
       Map _newUserReq = widget.userInfo.toMap();
@@ -57,10 +62,21 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
             Navigator.pushReplacementNamed(context, '/userSnakesList');
           });
         } else {
-          _serverErr = "Server Error. Please try again after sometime";
+          setState(() {
+            httpLoading = false;
+            _serverErr = "Server Error. Please try again after sometime";
+          });
         }
       }, onError: (err) {
-        _serverErr = "Server Error. Please try again after sometime";
+        setState(() {
+          httpLoading = false;
+          _serverErr = "Server Error. Please try again after sometime";
+        });
+      });
+    } else {
+      setState(() {
+        httpLoading = false;
+        _autoValidate = true;
       });
     }
   }
@@ -71,7 +87,20 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
       padding: EdgeInsets.only(top: 80.0),
       child: new Form(
           key: _formKey,
-          child: new Column(
+          autovalidate: _autoValidate,
+          child: httpLoading
+
+            ? new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[new CircularProgressIndicator()],
+                )
+              ],
+            )
+
+            : new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
@@ -84,10 +113,12 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
                   )
                 ],
               ),
+
               new Padding(
                 padding: EdgeInsets.all(20.0),
                 child: new Column(
                   children: <Widget>[
+
                     new ListTile(
                       leading: new Icon(Icons.person),
                       title: new TextFormField(
@@ -100,9 +131,12 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
                           validator: (value) {
                             if (value.isEmpty) {
                               return 'Required';
+                            } else if (value.length < 2){
+                              return 'Name must be more than 2 characters';
                             }
                           }),
                     ),
+
                     new ListTile(
                       leading: new Icon(Icons.person),
                       title: new TextFormField(
@@ -115,9 +149,14 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
                           validator: (value) {
                             if (value.isEmpty) {
                               return 'Required';
+                            } else if (value.length < 2){
+                              return 'Name must be more than 2 characters';
+                            } else {
+                              return null;
                             }
                           }),
                     ),
+
                     new ListTile(
                       leading: new Icon(Icons.phone),
                       title: new TextFormField(
@@ -130,9 +169,16 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
                           validator: (value) {
                             if (value.isEmpty) {
                               return 'Required';
+                            } else if (value.length < 8) {
+                              return 'Min : 7 digits';
+                            } else if (value.length > 15) {
+                              return 'Max : 15 digits';
+                            } else {
+                              return null;
                             }
                           }),
                     ),
+
                     new ListTile(
                       leading: new Icon(Icons.email),
                       title: new TextFormField(
@@ -144,6 +190,7 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
                         },
                       ),
                     ),
+
                     new ListTile(
                       leading: new Icon(Icons.work),
                       title: new InputDecorator(
@@ -194,7 +241,26 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
                           style: new TextStyle(color: Colors.white),
                         ),
                       ),
+                    ),
+
+                    _serverErr != ""
+                    ? new Container(
+                      margin: EdgeInsets.only(top:20.0),
+                      child: new Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          new Text(
+                            "Server Error. Please try again later",
+                            style: new TextStyle(
+                                color: Colors.red
+                            ),
+                          )
+                        ],
+                      ),
                     )
+                    : new Container()
+
                   ],
                 ),
               )
