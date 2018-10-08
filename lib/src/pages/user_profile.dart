@@ -165,6 +165,18 @@ class UserProfileFormState extends State<UserProfileForm> {
                               },
                             ),
                           ),
+
+                          new ListTile(
+                            leading: new Icon(Icons.business),
+                            title: new TextFormField(
+                              initialValue: snapshot.data.town,
+                              decoration: new InputDecoration(labelText: 'Town/City'),
+                              onSaved: (value) {
+                                snapshot.data.town = value;
+                              },
+                            ),
+                          ),
+
                           new ListTile(
                             leading: new Icon(Icons.work),
                             title: new InputDecorator(

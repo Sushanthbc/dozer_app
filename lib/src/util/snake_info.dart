@@ -18,6 +18,8 @@ class SnakeInfo {
   DateTime rescueDate;
   TimeOfDay rescueTime;
 
+  String natureOfSighting;
+
   String userId;
   String rescuedBy;
 
@@ -46,6 +48,7 @@ class SnakeInfo {
 
 
   SnakeInfo({
+    this.natureOfSighting,
     this.snakeLength,
     this.snakeLengthUnit,
     this.snakeWeight,
@@ -91,6 +94,7 @@ class SnakeInfo {
     map['rescue_date_time'] = new DateTime(
       rescueDate.year, rescueDate.month, rescueDate.day, rescueTime.hour, rescueTime.minute
     ).toString();
+    map['nature_of_sighting'] = natureOfSighting;
     map['address'] = address;
     map['village'] = village;
     map['pincode'] = int.parse(pincode);
@@ -140,6 +144,7 @@ class SnakeInfo {
 
   SnakeInfo.fromMap(Map<String, dynamic> map) {
     this.id = map['id'];
+    this.natureOfSighting = map["nature_of_sighting"];
     this.rescueDateTime= map["rescue_date_time"];
     this.rescueDate = DateTime.parse(map["rescue_date_time"]);
     this.rescueTime = TimeOfDay.fromDateTime(DateTime.parse(map["rescue_date_time"]));
@@ -235,6 +240,7 @@ class SnakeInfo {
         formData.rescueDate.day,
         formData.rescueTime.hour, formData.rescueTime.minute
     ).toString();
+    multipartRequest.fields['snake_charm[nature_of_sighting]'] = formData.natureOfSighting;
     multipartRequest.fields['snake_charm[user_id]'] = globals.loggedInUserId.toString();
     multipartRequest.fields['snake_charm[caller_name]'] = formData.callerName;
     multipartRequest.fields['snake_charm[caller_phone]'] =

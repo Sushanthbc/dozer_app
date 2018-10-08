@@ -35,6 +35,7 @@ class ListSnakes extends StatelessWidget {
                         snakeInfo: new SnakeInfo(
                             rescueDate: new DateTime.now(),
                             rescueTime: new TimeOfDay.now(),
+                            natureOfSighting: 'Rescue',
                             snakeCondition: 'Healthy',
                             snakeSex: 'Male',
                             snakeBehavior: 'Docile',

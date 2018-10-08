@@ -192,6 +192,17 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
                     ),
 
                     new ListTile(
+                      leading: new Icon(Icons.business),
+                      title: new TextFormField(
+                        initialValue: widget.userInfo.town,
+                        decoration: new InputDecoration(labelText: 'Town/City'),
+                        onSaved: (value) {
+                          widget.userInfo.town = value;
+                        },
+                      ),
+                    ),
+
+                    new ListTile(
                       leading: new Icon(Icons.work),
                       title: new InputDecorator(
                         decoration: new InputDecoration(labelText: "About Me"),

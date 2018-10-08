@@ -67,6 +67,12 @@ class NewRescueFormState extends State<NewRescueForm> {
     });*/
   }
 
+  List<String> _sightings = <String>[
+    'Rescue',
+    'Natural Habitat',
+    'Roadkill'
+  ];
+
   List<String> _macroHabitats = <String>[
     'House',
     'Plantation',
@@ -354,6 +360,29 @@ class NewRescueFormState extends State<NewRescueForm> {
                         ],
                       ),
                     ),
+
+                    new ListTile(
+                        leading: const Icon(Icons.visibility),
+                        title: new InputDecorator(
+                            decoration:
+                            new InputDecoration(labelText: "Nature of Sighting"),
+                            child: new DropdownButtonHideUnderline(
+                                child: new DropdownButton<String>(
+                                    value: _formData.natureOfSighting,
+                                    isDense: true,
+                                    onChanged: (String newValue) {
+                                      setState(() {
+                                        _formData.natureOfSighting =
+                                            newValue;
+                                      });
+                                    },
+                                    items: _sightings.map((String value) {
+                                      return new DropdownMenuItem<String>(
+                                        value: value,
+                                        child: new Text(value),
+                                      );
+                                    }).toList())))),
+
 
                     new ListTile(
                         leading: const Icon(Icons.person),

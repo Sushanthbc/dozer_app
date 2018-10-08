@@ -105,6 +105,18 @@ class RescueDetailState extends State<RescueDetail> {
                 ),
 
                 ListTile(
+                    leading: const Icon(Icons.visibility),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text("Nature of Sighting"),
+                        Text("${snakeInfo.natureOfSighting}")
+                      ],
+                    )
+
+                ),
+
+                ListTile(
                   leading: const Icon(Icons.compare_arrows),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
