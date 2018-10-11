@@ -174,6 +174,11 @@ class UserProfileFormState extends State<UserProfileForm> {
                               onSaved: (value) {
                                 snapshot.data.town = value;
                               },
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'Required';
+                                }
+                              }
                             ),
                           ),
 

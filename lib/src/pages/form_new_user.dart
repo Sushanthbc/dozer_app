@@ -199,6 +199,11 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
                         onSaved: (value) {
                           widget.userInfo.town = value;
                         },
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Required';
+                          }
+                        }
                       ),
                     ),
 

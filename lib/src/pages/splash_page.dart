@@ -34,18 +34,7 @@ class _SplashPageState extends State<SplashPage> {
           ).then((response){
             var resp = jsonDecode(response.body.toString());
 
-            List<String> displayName = user.displayName.split(" ");
-            _newUserInfo = new AppUserInfo();
-            _newUserInfo.firstName = displayName[0];
-            _newUserInfo.lastName = displayName[1];
-            _newUserInfo.phone = user.phoneNumber;
-            _newUserInfo.emailID = user.email;
-            _newUserInfo.aboutUser = "Rescuer";
-            isNewUser = true;
-            setState(() {
-            });
-
-            /*if (resp["user"] == false) {
+            if (resp["user"] == false) {
 
               List<String> displayName = user.displayName.split(" ");
               _newUserInfo = new AppUserInfo();
@@ -66,7 +55,7 @@ class _SplashPageState extends State<SplashPage> {
                Navigator.pushReplacementNamed(context, '/userSnakesList');
               });
 
-            }*/
+            }
           }, onError: (err){
             Scaffold.of(context).showSnackBar(
               SnackBar(content: Text("Server error! Please try after sometime."))
