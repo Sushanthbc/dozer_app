@@ -171,8 +171,8 @@ class UserRegistrationFormState extends State<UserRegistrationForm> {
                               return 'Required';
                             } else if (value.length < 8) {
                               return 'Min : 7 digits';
-                            } else if (value.length > 15) {
-                              return 'Max : 15 digits';
+                            } else if (value.length > 14) {
+                              return 'Max : 14 digits';
                             } else {
                               return null;
                             }
