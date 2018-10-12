@@ -105,6 +105,18 @@ class RescueDetailState extends State<RescueDetail> {
                 ),
 
                 ListTile(
+                    leading: const Icon(Icons.visibility),
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text("Nature of Sighting"),
+                        Text("${snakeInfo.natureOfSighting}")
+                      ],
+                    )
+
+                ),
+
+                ListTile(
                   leading: const Icon(Icons.compare_arrows),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -373,11 +385,16 @@ class RescueDetailState extends State<RescueDetail> {
                 snakeInfo.snakePhotos.length > 0
                     ? new GridView.count(
                     shrinkWrap: true,
+                    primary: false,
                     crossAxisCount: 3,
+                    mainAxisSpacing: 1.0,
+                    crossAxisSpacing: 1.0,
+
                     children:
                     List.generate(snakeInfo.snakePhotos.length, (index) {
                       return Center(
                           child: new Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               GestureDetector(
                                 onTap: () {
@@ -392,6 +409,7 @@ class RescueDetailState extends State<RescueDetail> {
                                 },
                                 child: new Image.network(
                                   snakeInfo.snakePhotos[index],
+                                  height: 90.0,
                                 ),
                               ),
 
@@ -399,7 +417,6 @@ class RescueDetailState extends State<RescueDetail> {
                           ));
                     }))
                     : new Container(),
-
 
               ],
             )

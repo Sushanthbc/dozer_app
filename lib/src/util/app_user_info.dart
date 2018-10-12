@@ -10,6 +10,7 @@ class AppUserInfo{
   bool isAdmin;
   String aboutUser;
   String purpose;
+  String town;
 
   AppUserInfo({
     this.userId,
@@ -19,7 +20,8 @@ class AppUserInfo{
     this.phone,
     this.isAdmin,
     this.aboutUser,
-    this.purpose
+    this.purpose,
+    this.town
   });
 
   Map<String, dynamic> toMap() {
@@ -31,6 +33,7 @@ class AppUserInfo{
         map['last_name'] = lastName;
         map['email_id'] = emailID;
         map['phone'] = phone;
+        map['town'] = town;
         map['about_user'] = aboutUser;
         map['purpose'] = purpose;
     return map;
@@ -42,6 +45,7 @@ class AppUserInfo{
     this.lastName = map['last_name'];
     this.emailID = map['email_id'];
     this.phone = map['phone'];
+    this.town = map['town'];
     this.isAdmin = map['admin'];
     this.aboutUser = map['about_user'];
     this.purpose = map['purpose'];

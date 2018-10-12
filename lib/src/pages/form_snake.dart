@@ -20,6 +20,7 @@ class NewRescueFormState extends State<NewRescueForm> {
 
   String httpAction;
   SnakeInfo _formData;
+  bool _autoValidate = false;
   bool _formErr = false;
   bool _serverErr = false;
   
@@ -65,6 +66,12 @@ class NewRescueFormState extends State<NewRescueForm> {
           .add({imagePath[imagePath.length - 1]: result});
     });*/
   }
+
+  List<String> _sightings = <String>[
+    'Rescue',
+    'Natural Habitat',
+    'Roadkill'
+  ];
 
   List<String> _macroHabitats = <String>[
     'House',
@@ -236,6 +243,7 @@ class NewRescueFormState extends State<NewRescueForm> {
       setState(() {
         httpInProgress = false;
         _formErr = true;
+        _autoValidate = true;
       });
     }
   }
@@ -293,6 +301,7 @@ class NewRescueFormState extends State<NewRescueForm> {
           : SingleChildScrollView(
             child: Form(
                 key: _formKey,
+                autovalidate: _autoValidate,
                 child: Column(
                   children: <Widget>[
 
@@ -353,6 +362,29 @@ class NewRescueFormState extends State<NewRescueForm> {
                     ),
 
                     new ListTile(
+                        leading: const Icon(Icons.visibility),
+                        title: new InputDecorator(
+                            decoration:
+                            new InputDecoration(labelText: "Nature of Sighting"),
+                            child: new DropdownButtonHideUnderline(
+                                child: new DropdownButton<String>(
+                                    value: _formData.natureOfSighting,
+                                    isDense: true,
+                                    onChanged: (String newValue) {
+                                      setState(() {
+                                        _formData.natureOfSighting =
+                                            newValue;
+                                      });
+                                    },
+                                    items: _sightings.map((String value) {
+                                      return new DropdownMenuItem<String>(
+                                        value: value,
+                                        child: new Text(value),
+                                      );
+                                    }).toList())))),
+
+
+                    new ListTile(
                         leading: const Icon(Icons.person),
                         title: new TextFormField(
                           initialValue: _formData.callerName,
@@ -365,6 +397,8 @@ class NewRescueFormState extends State<NewRescueForm> {
                           validator: (value) {
                             if (value == ""){
                               return "Required.";
+                            } else if (value.length < 2){
+                              return 'Name must be more than 2 characters';
                             }
                           },
                         )),
@@ -382,6 +416,12 @@ class NewRescueFormState extends State<NewRescueForm> {
                           validator: (value) {
                             if (value == ""){
                               return "Required.";
+                            } else if (value.length < 8) {
+                              return 'Min : 8 digits';
+                            } else if (value.length > 13) {
+                              return 'Max : 13 digits';
+                            } else {
+                              return null;
                             }
                           },
                         )),
@@ -397,6 +437,8 @@ class NewRescueFormState extends State<NewRescueForm> {
                         validator: (value) {
                           if (value == ""){
                             return "Required.";
+                          } else if (value.length < 2){
+                            return 'Address must be more than 2 characters';
                           }
                         },
                       ),
@@ -414,6 +456,12 @@ class NewRescueFormState extends State<NewRescueForm> {
                         validator: (value) {
                           if (value == ""){
                             return "Required.";
+                          } else if (value.length < 5) {
+                            return 'Min : 5 digits';
+                          } else if (value.length > 7) {
+                            return 'Max : 7 digits';
+                          } else {
+                            return null;
                           }
                         },
                       ),
@@ -430,6 +478,8 @@ class NewRescueFormState extends State<NewRescueForm> {
                         validator: (value) {
                           if (value == ""){
                             return "Required.";
+                          } else if (value.length < 3){
+                            return 'Min : 3 characters';
                           }
                         },
                       ),
@@ -903,6 +953,15 @@ class NewRescueFormState extends State<NewRescueForm> {
                         onSaved: (val){
                           _formData.cntBands = val;
                         },
+                        validator: (value){
+                          if (value != "" &&
+                              int.parse(value) < 10) {
+                            return "Min : 10";
+                          } else if (value != "" &&
+                              int.parse(value) > 100) {
+                            return "Max : 100";
+                          }
+                        },
                       ),
                     ),
 
@@ -1059,7 +1118,10 @@ class NewRescueFormState extends State<NewRescueForm> {
                     _formData.snakePhotos.length > 0
                         ? new GridView.count(
                             shrinkWrap: true,
+                            primary: false,
                             crossAxisCount: 3,
+                            mainAxisSpacing: 1.0,
+                            crossAxisSpacing: 1.0,
                             children: List.generate(
                                 snakeInfo.snakePhotos.length, (index) {
                               return Center(
@@ -1079,7 +1141,7 @@ class NewRescueFormState extends State<NewRescueForm> {
                                     },
                                     child: new Image.network(
                                       snakeInfo.snakePhotos[index],
-                                      fit: BoxFit.contain,
+                                      height: 90.0,
                                     ),
                                   ),
                                 ],
@@ -1101,14 +1163,19 @@ class NewRescueFormState extends State<NewRescueForm> {
                     _formData.images.length > 0
                         ? new GridView.count(
                             shrinkWrap: true,
+                            primary: false,
                             crossAxisCount: 3,
+                            mainAxisSpacing: 1.0,
+                            crossAxisSpacing: 1.0,
                             children: List.generate(
                                 _formData.images.length, (index) {
                               return Center(
                                   child: new Column(
                                 children: <Widget>[
                                   new Image.file(
-                                      _formData.images[index]),
+                                      _formData.images[index],
+                                    height: 90.0,
+                                  ),
                                   //new Text(_formData.imagesInfo[index]['image'])
                                 ],
                               ));

@@ -151,6 +151,12 @@ class UserProfileFormState extends State<UserProfileForm> {
                                 validator: (value) {
                                   if (value.isEmpty) {
                                     return 'Required';
+                                  } else if (value.length < 8) {
+                                    return 'Min : 7 digits';
+                                  } else if (value.length > 14) {
+                                    return 'Max : 14 digits';
+                                  } else {
+                                    return null;
                                   }
                                 }),
                           ),
@@ -165,6 +171,23 @@ class UserProfileFormState extends State<UserProfileForm> {
                               },
                             ),
                           ),
+
+                          new ListTile(
+                            leading: new Icon(Icons.business),
+                            title: new TextFormField(
+                              initialValue: snapshot.data.town,
+                              decoration: new InputDecoration(labelText: 'Town/City'),
+                              onSaved: (value) {
+                                snapshot.data.town = value;
+                              },
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'Required';
+                                }
+                              }
+                            ),
+                          ),
+
                           new ListTile(
                             leading: new Icon(Icons.work),
                             title: new InputDecorator(

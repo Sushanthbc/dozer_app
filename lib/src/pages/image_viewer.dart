@@ -14,7 +14,7 @@ class KcImageViewer extends StatelessWidget{
       ),
       body: new Image.network(
         imageURL,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         height: double.infinity,
         width: double.infinity,
         alignment: Alignment.center,
