@@ -4,4 +4,4 @@ int loggedInUserId;
 
 bool isUserAdmin;
 
-final String baseURL = "https://morning-castle-37512.herokuapp.com/";
+final String baseURL = "https://api-kalinga.herokuapp.com/";
